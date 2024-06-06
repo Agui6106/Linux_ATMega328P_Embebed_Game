@@ -171,12 +171,12 @@ class App(Frame):
             
     
     def draw(self) -> None:
-        subprocess.run(["python3", "/home/ingesitos/Documents/1945/game.py"])
+        subprocess.run(["python3", "./1945/game.py"])
         
     def _Create_draw_button(self) -> Button:
         return Button(
             master=self,
-            text = 'Draw',
+            text = 'Play 1945',
             command=self.draw
         )
     
