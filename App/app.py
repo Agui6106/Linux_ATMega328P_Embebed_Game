@@ -5,6 +5,7 @@ from tkinter import Label
 from tkinter import messagebox
 from tkinter import Tk
 
+import subprocess
 import pygame
 
 from tkinter.ttk import Combobox
@@ -28,32 +29,56 @@ class App(Frame):
         self.temperature_label: Label = self._create_temperature_label()
         self.read_temperature_button: Button = self._create_temperature_button()
         self.creators_names_label: Label = self._create_creators_names_label()
+        self.draw_button: Button = self._Create_draw_button()
         self.init_gui()
+        """
+        resolution = (320, 480)
+        screen = pygame.display.set_mode((resolution))
+        screen.fill(pygame.Color(255,255,255))
+        self.screen = screen
+        pygame.display.init()
+        pygame.display.update()  
 
+        """
     def init_gui(self,)-> None:
         # -- Propiedades de ventana -- #
-        self.parent.title('Outside Temperature')
-        self.parent.geometry('500x600') #X*Y
         
-        self['bg'] = 'black'
+        # Dimensiones de la pantalla 
+        window_width = 500
+        window_height = 600
+        # Obtenemos las dimesiones de la pantalla
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+
+        # Buscamos el punto medio
+        center_x = int(screen_width/2 - window_width / 2)
+        center_y = int(screen_height/2 - window_height / 2)
+        self.parent.title('GameNest- V1.0')
+        root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+        self['bg'] = ''
         self.pack(expand=True, fill=BOTH)
 
         # Ubicacion de elementos graficos #
-        
+
         #row 0
+        
         self.serial_devices_combobox.grid(row=1, column=0, padx=20, pady=30)
         self.refresh_serial_devices_button.grid(row = 1, column = 1, pady= 30)
         self.baudrate_combobox.grid(row = 2, column = 0)
         self.connet_button.grid(row = 2, column = 1)
+        
+        self.draw_button.grid(row=3, column=0)
         #row 1
-        self.temperature_label.grid(row = 3, column = 0, pady=30)
-        self.read_temperature_button.grid(row = 3, column = 1, pady=30)
-        self.creators_names_label.grid(row=4, column=0 )
+        
+        self.temperature_label.grid(row = 4, column = 0, pady=30)
+        self.read_temperature_button.grid(row = 4, column = 1, pady=30)
+        self.creators_names_label.grid(row=5, column=0 )
+        
         #other settings
         self.baudrate_combobox.current(0) # No esta seleccionado
     
     # -- Dispositvo serial -- #
-    
     # Visual - seleccion de puertos
     def _init_serial_devices_combobox(self, ) -> Combobox:
         ports = ['Select a serial port'] + find_available_serial_ports()
@@ -143,7 +168,19 @@ class App(Frame):
             self.temperature_label['text'] = f"{temperature[1:-4]} C"
             return
         messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
+            
+    
+    def draw(self) -> None:
+        subprocess.run(["python3", "/home/ingesitos/Documents/1945/game.py"])
         
+    def _Create_draw_button(self) -> Button:
+        return Button(
+            master=self,
+            text = 'Draw',
+            command=self.draw
+        )
+    
+    
     # US
     def _create_creators_names_label(self) -> Label:
         return Label(
@@ -160,5 +197,4 @@ root = Tk()
 
 if __name__ == '__main__':
     ex = App(root)
-    
     root.mainloop()
