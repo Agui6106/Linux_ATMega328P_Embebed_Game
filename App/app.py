@@ -4,8 +4,6 @@ from tkinter import Frame
 from tkinter import Label
 from tkinter import messagebox
 from tkinter import Tk
-from tkinter import Canvas
-from tkinter import PhotoImage
 
 import pygame
 
@@ -33,30 +31,15 @@ class App(Frame):
         self.init_gui()
 
     def init_gui(self,)-> None:
-
+        # -- Propiedades de ventana -- #
         self.parent.title('Outside Temperature')
         self.parent.geometry('500x600') #X*Y
         
-        # Crear un Canvas para la imagen de fondo
-        #self.canvas = Canvas(self.parent, width=500, height=170)
-        #self.canvas.pack(expand=True, fill=BOTH)
-
-        # Cargar y mostrar la imagen de fondo
-        #self.bg_image = PhotoImage(file="wallpaper6Up.png", width=500, height=200)  # Guardar referencia a la imagen
-        #self.canvas.create_image(0, 0, anchor='nw', image=self.bg_image) # (x,y)
-        
         self['bg'] = 'black'
         self.pack(expand=True, fill=BOTH)
+
+        # Ubicacion de elementos graficos #
         
-        # Crear un Canvas para la imagen de fondo
-        #self.canvas2 = Canvas(self.parent, width=500, height=170)
-        #self.canvas2.pack(expand=True, fill=BOTH)
-
-        # Cargar y mostrar la imagen de fondo
-        #self.bg_image2 = PhotoImage(file="wallpaper6Down.png", width=500, height=200)  # Guardar referencia a la imagen
-        #self.canvas2.create_image(0, 0, anchor='nw', image=self.bg_image2)
-
-        #aqui vamos a colocar los elementos graficos
         #row 0
         self.serial_devices_combobox.grid(row=1, column=0, padx=20, pady=30)
         self.refresh_serial_devices_button.grid(row = 1, column = 1, pady= 30)
@@ -69,14 +52,9 @@ class App(Frame):
         #other settings
         self.baudrate_combobox.current(0) # No esta seleccionado
     
-    # El guión bajo es solo para funciones internas, y el doble guión para funciones tipo "protected"
-    def read_temperature(self) -> None:
-        if self.serial_device is not None:
-            temperature = self.serial_device.send('TC2')
-            self.temperature_label['text'] = f"{temperature[1:-4]} C"
-            return
-        messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
+    # -- Dispositvo serial -- #
     
+    # Visual - seleccion de puertos
     def _init_serial_devices_combobox(self, ) -> Combobox:
         ports = ['Select a serial port'] + find_available_serial_ports()
         return Combobox(
@@ -87,10 +65,12 @@ class App(Frame):
             cursor='trek'
         )
     
+    # Operativo - seleccion de puertos
     def refresh_serial_devices(self) -> None:
         ports = find_available_serial_ports()
         self.serial_devices_combobox['values'] = ports
     
+    # Visual - buscar dispostivos seriales
     def _create_refresh_serial_devices_button(self,) -> Button:
         return Button(
             master = self,
@@ -98,7 +78,8 @@ class App(Frame):
             cursor='exchange',
             command = self.refresh_serial_devices
         )
-        
+    
+    # Visual - seleccionar baudrates
     def _create_baudrate_combobox(self) -> Combobox:
         baudrates_values = ['BAUDRATE'] + BAUDRATES
         return Combobox(
@@ -107,7 +88,8 @@ class App(Frame):
             width=30,
             cursor='star'
         )
-        
+    
+    # Operativo - Conexion al puerto serial
     def connect_serial_device(self) -> None:
         try:        
             baudrate = int(self.baudrate_combobox.get())
@@ -122,7 +104,8 @@ class App(Frame):
         except ValueError:
             messagebox.showerror('Wrong baudrate','Baudrate not valid')
             return
-        
+    
+    # Visual - Conexion al puerto serial    
     def _create_connect_button(self,) -> Button:
         return Button(
             master = self,
@@ -133,6 +116,7 @@ class App(Frame):
             font=("Helvetica",11,"bold")
         )
     
+    # Visual - Despliege de temperatura
     def _create_temperature_label(self) -> Label:
         return Label(
             master = self,
@@ -141,7 +125,8 @@ class App(Frame):
             foreground = 'white',
             font=("monospace",20,"italic")
         )
-        
+    
+    # Operativo - Boton de despliege de temperatura    
     def _create_temperature_button(self) -> None:
         return Button(
             master = self,
@@ -151,6 +136,15 @@ class App(Frame):
             cursor='watch'
         )
         
+    # Operativo - Lectura de temperaturas 
+    def read_temperature(self) -> None:
+        if self.serial_device is not None:
+            temperature = self.serial_device.send('TC2')
+            self.temperature_label['text'] = f"{temperature[1:-4]} C"
+            return
+        messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
+        
+    # US
     def _create_creators_names_label(self) -> Label:
         return Label(
             master = self,
