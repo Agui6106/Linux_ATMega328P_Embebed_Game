@@ -6,13 +6,16 @@ from tkinter import messagebox
 from tkinter import Tk
 
 import subprocess
-import pygame
+import os
 
 from tkinter.ttk import Combobox
 
 from utils import find_available_serial_ports
 from serial_sensor import BAUDRATES
 from serial_sensor import SerialSensor
+
+# List of avaiblae games
+GAMES = ['1945', 'Aseivo', 'PacMan' ]
 
 class App(Frame):
 
@@ -21,7 +24,7 @@ class App(Frame):
         self.parent:Tk = parent
         # Esta variable puede ser del tipo sensor o nada
         self.serial_device: SerialSensor | None = None
-        # Aqui vamos a crear todos los componentes graficos
+        # Aqui vamos a crear todos los componentes graficos seriales
         self.serial_devices_combobox: Combobox = self._init_serial_devices_combobox()
         self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
         self.baudrate_combobox: Combobox = self._create_baudrate_combobox()
@@ -29,17 +32,19 @@ class App(Frame):
         self.temperature_label: Label = self._create_temperature_label()
         self.read_temperature_button: Button = self._create_temperature_button()
         self.creators_names_label: Label = self._create_creators_names_label()
-        self.draw_button: Button = self._Create_draw_button()
+        # - Eleemntos graficos juegos - #
+        # Section 1 - Game select
+        self.play_button: Button = self._Create_play_button()
+        self.avaibale_games: Combobox = self._create_games_combobox()
+        # Section 2 - Button Interface
+        self.scores_butt: Button = self._create_scores_button()
+        self.UPScores_butt: Button = self._create_UP_scores_button()
+        self.settings_butt: Button = self._create_Settings_button()
+        self.credtis_butt: Button = self._create_Credits_button()
+        
+        
         self.init_gui()
-        """
-        resolution = (320, 480)
-        screen = pygame.display.set_mode((resolution))
-        screen.fill(pygame.Color(255,255,255))
-        self.screen = screen
-        pygame.display.init()
-        pygame.display.update()  
 
-        """
     def init_gui(self,)-> None:
         # -- Propiedades de ventana -- #
         
@@ -53,27 +58,36 @@ class App(Frame):
         # Buscamos el punto medio
         center_x = int(screen_width/2 - window_width / 2)
         center_y = int(screen_height/2 - window_height / 2)
-        self.parent.title('GameNest- V1.0')
+        self.parent.title('GameNest by GameSystems Inc. - V1.0')
         root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+        #self.resizable(False, False)
 
         self['bg'] = ''
         self.pack(expand=True, fill=BOTH)
 
         # Ubicacion de elementos graficos #
 
-        #row 0
+        # Game select - Section 1
+        self.avaibale_games.grid(row=1, column=0, padx=20)
+        self.play_button.grid(row=2, column=0, padx=20)
         
-        self.serial_devices_combobox.grid(row=1, column=0, padx=20, pady=30)
-        self.refresh_serial_devices_button.grid(row = 1, column = 1, pady= 30)
-        self.baudrate_combobox.grid(row = 2, column = 0)
-        self.connet_button.grid(row = 2, column = 1)
+        # App Control - Section 2
+        self.scores_butt.grid(row=3, column=0, sticky="w", padx=10, pady=10)
+        self.UPScores_butt.grid(row=3 ,column=1)
+        self.settings_butt.grid(row=4, column=0, sticky="w", padx=10, pady=10)
+        self.credtis_butt.grid(row=4 ,column=1)
+        """
+        self.refresh_serial_devices_button.grid(row = 3, column = 1, pady= 30)
+        self.baudrate_combobox.grid(row = 3, column = 0)
+        self.connet_button.grid(row = 4, column = 1)
+        """
         
-        self.draw_button.grid(row=3, column=0)
         #row 1
-        
-        self.temperature_label.grid(row = 4, column = 0, pady=30)
-        self.read_temperature_button.grid(row = 4, column = 1, pady=30)
-        self.creators_names_label.grid(row=5, column=0 )
+        """
+        self.temperature_label.grid(row = 5, column = 0, pady=30)
+        self.read_temperature_button.grid(row = 5, column = 1, pady=30)
+        """
+        self.creators_names_label.grid(row=6, column=0 )
         
         #other settings
         self.baudrate_combobox.current(0) # No esta seleccionado
@@ -169,17 +183,80 @@ class App(Frame):
             return
         messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
             
-    
-    def draw(self) -> None:
+    # - Juegos - #
+    # Operativo - Seleccion de juego 
+    def play(self) -> None:
         subprocess.run(["python3", "./1945/game.py"])
-        
-    def _Create_draw_button(self) -> Button:
+    
+    # Visual - Boton seleccion del juego    
+    def _Create_play_button(self) -> Button:
         return Button(
             master=self,
-            text = 'Play 1945',
-            command=self.draw
+            text = 'Play',
+            font=("Z003",15,"bold"),
+            command=self.play
         )
     
+    # Visual - seleccionar el juego que deseamos
+    def _create_games_combobox(self) -> Combobox:
+        games_vals = ['Select a game'] + GAMES
+        return Combobox(
+            master = self,
+            values = games_vals,
+            width=30,
+            cursor='star',            
+            font=("C059", 15), 
+            justify=("center")
+        )
+    
+    # Operativo - Seleccion del juego
+    def selection_game(self) -> None:
+        pass
+    
+    # Visual - Boton Scores
+    def _create_scores_button(self) -> Button:
+        return Button(
+            master = self,
+            text = 'Scores',
+            command = self.connect_serial_device,
+            width=20,
+            cursor='spider',
+            font=("Z003",15,"bold")
+        )
+    
+    # Visual - Upload Scores
+    def _create_UP_scores_button(self) -> Button:
+        return Button(
+            master = self,
+            text = 'Upload Scores',
+            command = self.connect_serial_device,
+            width=20,
+            cursor='spider',
+            justify='center',
+            font=("Z003",15,"bold")
+        )
+    
+    # Visual - Local Settings
+    def _create_Settings_button(self) -> Button:
+        return Button(
+            master = self,
+            text = 'Settings',
+            command = self.connect_serial_device,
+            width=10,
+            cursor='spider',
+            font=("Z003",15,"bold")
+        )
+    
+    # Visual - Credits
+    def _create_Credits_button(self) -> Button:
+        return Button(
+            master = self,
+            text = 'Credits',
+            command = self.connect_serial_device,
+            width=10,
+            cursor='spider',
+            font=("Z003",15,"bold")
+        )
     
     # US
     def _create_creators_names_label(self) -> Label:
