@@ -38,7 +38,7 @@ if __name__ == "__main__":
    # Run the Tkinter main loop
    root.mainloop()  
    
-   """
+   
 
 #Import required library
 from tkinter import *
@@ -69,3 +69,65 @@ canvas.create_window((5,4), window=frame, anchor="n")
 frame.bind("<Configure>", lambda e, canvas=canvas: onFrameConfigure(canvas))
 fill_frame(frame)
 win.mainloop()
+
+"""
+import tkinter as tk
+from tkinter import ttk
+
+class FrameOne(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.init_ui()
+
+    def init_ui(self):
+        label = tk.Label(self, text="This is Frame One", font=("Arial", 16))
+        label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
+        # Combobox that spans two columns
+        self.available_games = ttk.Combobox(self, values=["Game 1", "Game 2", "Game 3"])
+        self.available_games.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+        button = tk.Button(self, text="Click me in Frame One", command=self.on_button_click)
+        button.grid(row=2, column=0, columnspan=2, pady=10)
+
+    def on_button_click(self):
+        print("Button in Frame One clicked")
+
+class FrameTwo(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.init_ui()
+
+    def init_ui(self):
+        label = tk.Label(self, text="This is Frame Two", font=("Arial", 16))
+        label.grid(row=0, column=0, padx=10, pady=10)
+
+        button = tk.Button(self, text="Click me in Frame Two", command=self.on_button_click)
+        button.grid(row=1, column=0, pady=10)
+
+    def on_button_click(self):
+        print("Button in Frame Two clicked")
+
+class MainApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Tkinter Multi-Frame Application")
+        self.geometry("600x400")
+
+        # Create a main frame to hold both FrameOne and FrameTwo
+        main_frame = tk.Frame(self)
+        main_frame.pack(fill="both", expand=True)
+
+        # Create and place FrameOne in the left side of the main frame
+        frame_one = FrameOne(main_frame)
+        frame_one.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+
+        # Create and place FrameTwo in the right side of the main frame
+        frame_two = FrameTwo(main_frame)
+        frame_two.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+
+if __name__ == "__main__":
+    app = MainApp()
+    app.mainloop()
+
+

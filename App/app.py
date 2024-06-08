@@ -4,6 +4,8 @@ from tkinter import Frame
 from tkinter import Label
 from tkinter import messagebox
 from tkinter import Tk
+from tkinter import Canvas
+from tkinter import PhotoImage
 
 import subprocess
 import os
@@ -61,21 +63,38 @@ class App(Frame):
         self.parent.title('GameNest by GameSystems Inc. - V1.0')
         root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
         #self.resizable(False, False)
+        
+        # Crear un Canvas para la imagen de fondo
+        self.canvas = Canvas(self.parent, width=500, height=170)
+        self.canvas.pack(expand=True, fill=BOTH)
+
+        # Cargar y mostrar la imagen de fondo
+        self.bg_image = PhotoImage(file="test.png", width=500, height=100)  # Guardar referencia a la imagen
+        self.canvas.create_image(0, 0, anchor='nw', image=self.bg_image) # (x,y)
 
         self['bg'] = ''
         self.pack(expand=True, fill=BOTH)
+        
+        # Crear un Canvas para la imagen de fondo
+        self.canvas2 = Canvas(self.parent, width=500, height=170)
+        self.canvas2.pack(expand=True, fill=BOTH)
+
+        # Cargar y mostrar la imagen de fondo
+        self.bg_image2 = PhotoImage(file="test.png", width=500, height=200)  # Guardar referencia a la imagen
+        self.canvas2.create_image(0, 0, anchor='nw', image=self.bg_image2)
+
 
         # Ubicacion de elementos graficos #
 
         # Game select - Section 1
-        self.avaibale_games.grid(row=1, column=0, padx=20)
-        self.play_button.grid(row=2, column=0, padx=20)
+        self.avaibale_games.grid(row=1, column=0, columnspan=2, padx=20)
+        self.play_button.grid(row=2, column=0, columnspan=2, padx=20, pady= 10)
         
         # App Control - Section 2
         self.scores_butt.grid(row=3, column=0, sticky="w", padx=10, pady=10)
-        self.UPScores_butt.grid(row=3 ,column=1)
+        self.UPScores_butt.grid(row=3 ,column=1, sticky="w")
         self.settings_butt.grid(row=4, column=0, sticky="w", padx=10, pady=10)
-        self.credtis_butt.grid(row=4 ,column=1)
+        self.credtis_butt.grid(row=4 ,column=1, sticky="w")
         """
         self.refresh_serial_devices_button.grid(row = 3, column = 1, pady= 30)
         self.baudrate_combobox.grid(row = 3, column = 0)
@@ -87,7 +106,7 @@ class App(Frame):
         self.temperature_label.grid(row = 5, column = 0, pady=30)
         self.read_temperature_button.grid(row = 5, column = 1, pady=30)
         """
-        self.creators_names_label.grid(row=6, column=0 )
+        self.creators_names_label.grid(row=6, column=0, columnspan=2, sticky="w")
         
         #other settings
         self.baudrate_combobox.current(0) # No esta seleccionado
@@ -242,7 +261,7 @@ class App(Frame):
             master = self,
             text = 'Settings',
             command = self.connect_serial_device,
-            width=10,
+            width=20,
             cursor='spider',
             font=("Z003",15,"bold")
         )
@@ -253,7 +272,7 @@ class App(Frame):
             master = self,
             text = 'Credits',
             command = self.connect_serial_device,
-            width=10,
+            width=20,
             cursor='spider',
             font=("Z003",15,"bold")
         )
