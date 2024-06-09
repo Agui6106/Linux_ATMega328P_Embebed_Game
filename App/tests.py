@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
    # Run the Tkinter main loop
    root.mainloop()  
-   
+""" 
    
 
 #Import required library
@@ -70,7 +70,7 @@ frame.bind("<Configure>", lambda e, canvas=canvas: onFrameConfigure(canvas))
 fill_frame(frame)
 win.mainloop()
 
-
+"""
 import tkinter as tk
 from tkinter import ttk
 
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
 
-"""
+
 
 import tkinter as tk
 from tkinter import ttk
@@ -184,5 +184,6 @@ class MainApp(tk.Tk):
 if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
+    """
 
 
