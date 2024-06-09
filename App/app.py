@@ -235,9 +235,6 @@ class FrameTwo(Frame):
         #self.read_temperature_button: Button = self._create_temperature_button()
         
         self.init_gui()
-
-        # Ejemplo de contenido para FrameTwo
-        
     
     def init_gui(self,) -> None:
         self.title_label.grid(row=0, column=0, columnspan=2, sticky ='n',padx=40)
