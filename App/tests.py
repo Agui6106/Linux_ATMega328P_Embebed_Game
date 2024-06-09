@@ -70,7 +70,7 @@ frame.bind("<Configure>", lambda e, canvas=canvas: onFrameConfigure(canvas))
 fill_frame(frame)
 win.mainloop()
 
-"""
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -125,6 +125,61 @@ class MainApp(tk.Tk):
         # Create and place FrameTwo in the right side of the main frame
         frame_two = FrameTwo(main_frame)
         frame_two.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+
+if __name__ == "__main__":
+    app = MainApp()
+    app.mainloop()
+
+"""
+
+import tkinter as tk
+from tkinter import ttk
+
+class FrameOne(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.init_ui()
+
+    def init_ui(self):
+        label = tk.Label(self, text="This is Frame One", font=("Arial", 16))
+        label.pack(padx=10, pady=10)
+        
+        button = tk.Button(self, text="Switch to Frame Two", command=self.switch_to_frame_two)
+        button.pack(pady=10)
+    
+    def switch_to_frame_two(self):
+        self.master.switch_frame(FrameTwo)
+
+class FrameTwo(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.init_ui()
+
+    def init_ui(self):
+        label = tk.Label(self, text="This is Frame Two", font=("Arial", 16))
+        label.pack(padx=10, pady=10)
+        
+        button = tk.Button(self, text="Switch to Frame One", command=self.switch_to_frame_one)
+        button.pack(pady=10)
+    
+    def switch_to_frame_one(self):
+        self.master.switch_frame(FrameOne)
+
+class MainApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Tkinter Multi-Frame Application")
+        self.geometry("400x300")
+        
+        self._frame = None
+        self.switch_frame(FrameOne)
+
+    def switch_frame(self, frame_class):
+        new_frame = frame_class(self)
+        if self._frame is not None:
+            self._frame.destroy()
+        self._frame = new_frame
+        self._frame.pack(fill="both", expand=True)
 
 if __name__ == "__main__":
     app = MainApp()

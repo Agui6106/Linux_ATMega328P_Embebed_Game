@@ -44,7 +44,6 @@ class App(Frame):
         self.settings_butt: Button = self._create_Settings_button()
         self.credtis_butt: Button = self._create_Credits_button()
         
-        
         self.init_gui()
 
     def init_gui(self,)-> None:
@@ -65,30 +64,34 @@ class App(Frame):
         #self.resizable(False, False)
         
         # Crear un Canvas para la imagen de fondo
-        self.canvas = Canvas(self.parent, width=500, height=170)
+        self.canvas = Canvas(self.parent, width=500, height=10)
         self.canvas.pack(expand=True, fill=BOTH)
 
         # Cargar y mostrar la imagen de fondo
-        self.bg_image = PhotoImage(file="test.png", width=500, height=100)  # Guardar referencia a la imagen
+        self.bg_image = PhotoImage(file="juegos-friv.png", width=500, height=100)  # Guardar referencia a la imagen
         self.canvas.create_image(0, 0, anchor='nw', image=self.bg_image) # (x,y)
 
         self['bg'] = ''
         self.pack(expand=True, fill=BOTH)
         
-        # Crear un Canvas para la imagen de fondo
-        self.canvas2 = Canvas(self.parent, width=500, height=170)
-        self.canvas2.pack(expand=True, fill=BOTH)
+        # - Creacion de Frame de ajsutes (Section 3) - #
+        self.main_frame  = Frame(master=self.parent, width=500, height=500, bg='')
+        self.main_frame.pack(side='top', fill=BOTH, expand=True)
 
-        # Cargar y mostrar la imagen de fondo
-        self.bg_image2 = PhotoImage(file="test.png", width=500, height=200)  # Guardar referencia a la imagen
-        self.canvas2.create_image(0, 0, anchor='nw', image=self.bg_image2)
+        # Centro de control
+        self.frame_scores = FrameOne(self.main_frame)
+        self.frame_settings = FrameTwo(self.main_frame)
+        self.frame_UP_Scores = FrameThree(self.main_frame)
+        self.frame_Credits = FrameFour(self.main_frame)
 
+        # Inicialmente mostrar solo FrameOne
+        self.frame_scores.pack(fill="both", expand=True)
+        
 
-        # Ubicacion de elementos graficos #
-
+        # - Ubicacion de elementos graficos - #
         # Game select - Section 1
-        self.avaibale_games.grid(row=1, column=0, columnspan=2, padx=20)
-        self.play_button.grid(row=2, column=0, columnspan=2, padx=20, pady= 10)
+        self.avaibale_games.grid(row=1, column=0, sticky="n", columnspan=2, padx=20)
+        self.play_button.grid(row=2, column=0, sticky= "n", columnspan=2, padx=20, pady= 10)
         
         # App Control - Section 2
         self.scores_butt.grid(row=3, column=0, sticky="w", padx=10, pady=10)
@@ -237,45 +240,78 @@ class App(Frame):
         return Button(
             master = self,
             text = 'Scores',
-            command = self.connect_serial_device,
+            command = self.show_frame_scores,
             width=20,
             cursor='spider',
             font=("Z003",15,"bold")
         )
+    
+    # Operativo - Cambio al Frame scores
+    def show_frame_scores(self):
+        self.frame_scores.pack_forget()
+        self.frame_scores.pack(fill="both", expand=True)
+        self.frame_settings.pack_forget()
+        self.frame_Credits.pack_forget()
+        self.frame_UP_Scores.pack_forget()
     
     # Visual - Upload Scores
     def _create_UP_scores_button(self) -> Button:
         return Button(
             master = self,
             text = 'Upload Scores',
-            command = self.connect_serial_device,
+            command = self.show_frame_UP_Scores,
             width=20,
             cursor='spider',
             justify='center',
             font=("Z003",15,"bold")
         )
     
+    # Operativo - Cambio al Frame de UP Socres
+    def show_frame_UP_Scores(self):
+        self.frame_UP_Scores.pack_forget()
+        self.frame_UP_Scores.pack(fill="both", expand=True)
+        self.frame_settings.pack_forget()
+        self.frame_Credits.pack_forget()
+        self.frame_scores.pack_forget()
+    
+    
     # Visual - Local Settings
     def _create_Settings_button(self) -> Button:
         return Button(
             master = self,
             text = 'Settings',
-            command = self.connect_serial_device,
+            command = self.show_settings_frame,
             width=20,
             cursor='spider',
             font=("Z003",15,"bold")
         )
+    
+    # Operativo - Cambio al Frame scores
+    def show_settings_frame(self):
+        self.frame_settings.pack_forget()
+        self.frame_settings.pack(fill="both", expand=True)
+        self.frame_scores.pack_forget()
+        self.frame_Credits.pack_forget()
+        self.frame_UP_Scores.pack_forget()
     
     # Visual - Credits
     def _create_Credits_button(self) -> Button:
         return Button(
             master = self,
             text = 'Credits',
-            command = self.connect_serial_device,
+            command = self.show_frame_Credits,
             width=20,
             cursor='spider',
             font=("Z003",15,"bold")
         )
+    
+    # Operativo - Cambio al Frame de UP Socres
+    def show_frame_Credits(self):
+        self.frame_Credits.pack_forget()
+        self.frame_Credits.pack(fill="both", expand=True)
+        self.frame_settings.pack_forget()
+        self.frame_UP_Scores.pack_forget()
+        self.frame_scores.pack_forget()
     
     # US
     def _create_creators_names_label(self) -> Label:
@@ -288,6 +324,44 @@ class App(Frame):
             cursor='heart'
         )
         
+# -- Frames de control (Section 3)-- #
+# Scores Frame
+class FrameOne(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
+        # Ejemplo de contenido para FrameOne
+        Label(self, text="This is scores Frame").pack()
+
+# Settings Frame
+class FrameTwo(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
+        # Ejemplo de contenido para FrameTwo
+        Label(self, text="This is settings Frame").pack()
+
+# UP Socres frame
+class FrameThree(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
+        # Ejemplo de contenido para FrameTwo
+        Label(self, text="This is Upload Scores Frame").pack()
+     
+# Credits Frame   
+class FrameFour(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+
+        # Ejemplo de contenido para FrameTwo
+        Label(self, text="This is credits Frame").pack()
+        
+# ------------------------------------------------------ #
 
 root = Tk()
 
