@@ -45,6 +45,9 @@ class SerialSensor:
         recieved = self._serial.readline()
         return recieved
     
+    def is_open(self):
+        return self._serial.is_open
+    
     def close(self) -> None:
         self._serial.close()
             

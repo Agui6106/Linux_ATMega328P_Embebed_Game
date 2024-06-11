@@ -100,8 +100,6 @@ class App(Frame):
         if (selected_value == "Control Test"):
             subprocess.run(["python3", "control_test.py"])
             
-        
-    
     # Visual - Boton seleccion del juego    
     def _Create_play_button(self) -> Button:
         return Button(
@@ -305,11 +303,16 @@ class FrameTwo(Frame):
             baudrate = int(self.baudrate_combobox.get())
             port = self.serial_devices_combobox.get()
             if port == '':
-                 messagebox.showerror('Port not selected',f'Select a valid port {port =}')
+                messagebox.showerror('Port not selected',f'Select a valid port {port =}')
+                return
+            
             self.serial_device = SerialSensor(
                 port = port,
                 baudrate = baudrate
             ) 
+            
+            if self.serial_device.is_open():
+                messagebox.showinfo('Connection Successful', f'Control connected successfully on {port} with baudrate {baudrate}')
                 
         except ValueError:
             messagebox.showerror('Wrong baudrate','Baudrate not valid')
