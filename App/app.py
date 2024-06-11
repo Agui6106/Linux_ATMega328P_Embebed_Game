@@ -17,7 +17,7 @@ from serial_sensor import BAUDRATES
 from serial_sensor import SerialSensor
 
 # List of avaiblae games
-GAMES = ['1945', 'Aseivo', 'PacMan' ]
+GAMES = ['1945', 'Aseivo', 'Control Test' ]
 
 class App(Frame):
     def __init__(self, parent, *args, **kwargs):       
@@ -58,7 +58,7 @@ class App(Frame):
         self.canvas.pack(expand=True, fill=BOTH)
 
         # Cargar y mostrar la imagen de fondo
-        self.bg_image = PhotoImage(file="juegos-friv.png", width=500, height=100)  # Guardar referencia a la imagen
+        self.bg_image = PhotoImage(file="GameNest_Banner.png", width=500, height=100)  # Guardar referencia a la imagen
         self.canvas.create_image(0, 0, anchor='nw', image=self.bg_image) # (x,y)
 
         self['bg'] = ''
@@ -93,7 +93,14 @@ class App(Frame):
     # - Juegos - #
     # Operativo - Seleccion de juego 
     def play(self) -> None:
-        subprocess.run(["python3", "./1945/game.py"])
+        selected_value = self.avaibale_games.get()
+        if (selected_value == "1945"):
+            subprocess.run(["python3", "./1945/game.py"])
+        
+        if (selected_value == "Control Test"):
+            subprocess.run(["python3", "control_test.py"])
+            
+        
     
     # Visual - Boton seleccion del juego    
     def _Create_play_button(self) -> Button:
@@ -106,20 +113,17 @@ class App(Frame):
     
     # Visual - seleccionar el juego que deseamos
     def _create_games_combobox(self) -> Combobox:
-        games_vals = ['Select a game'] + GAMES
+        games_vals = ['Select a game'] + GAMES 
         return Combobox(
             master = self,
             values = games_vals,
             width=30,
+            state="readonly",
             cursor='star',            
             font=("C059", 15), 
-            justify=("center")
+            justify=("center"),  
         )
-    
-    # Operativo - Seleccion del juego
-    def selection_game(self) -> None:
-        pass
-    
+        
     # Visual - Boton Scores
     def _create_scores_button(self) -> Button:
         return Button(
@@ -263,6 +267,7 @@ class FrameTwo(Frame):
             self, 
             values=ports, 
             font=("Courier", 15), 
+            state="readonly",
             width=30, 
             cursor='trek'
         )
@@ -290,7 +295,8 @@ class FrameTwo(Frame):
             master = self,
             values = baudrates_values,
             width=30,
-            cursor='star'
+            cursor='star',
+            state="readonly"
         )
     
     # Operativo - Conexion al puerto serial

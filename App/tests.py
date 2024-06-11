@@ -1,4 +1,6 @@
 """
+
+# --  TKinter with Pygame -- #
 import tkinter as tk  # Import the Tkinter library
 import pygame  # Import the Pygame library
 
@@ -37,9 +39,9 @@ if __name__ == "__main__":
 
    # Run the Tkinter main loop
    root.mainloop()  
-""" 
-   
 
+   
+# -- List of fotns in tkinter -- #
 #Import required library
 from tkinter import *
 from tkinter import font
@@ -70,7 +72,7 @@ frame.bind("<Configure>", lambda e, canvas=canvas: onFrameConfigure(canvas))
 fill_frame(frame)
 win.mainloop()
 
-"""
+# -- 2 frames ant the same time -- #
 import tkinter as tk
 from tkinter import ttk
 
@@ -130,8 +132,7 @@ if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
 
-
-
+# -- Cambio entre 2 frames -- #
 import tkinter as tk
 from tkinter import ttk
 
@@ -185,5 +186,24 @@ if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
     """
+
+# -- Bluethoot test -- #
+import serial
+import time
+
+# Configurar el puerto serial
+port = serial.Serial("/dev/rfcomm0", baudrate=2400)
+
+# Lectura de datos del puerto serial
+try:
+    while True:
+        print("DIGITAL LOGIC -- > READING...")
+        recieved = serial.readline()
+        print(recieved)
+        time.sleep(3)
+except KeyboardInterrupt:
+    print("Exiting...")
+finally:
+    port.close()
 
 
