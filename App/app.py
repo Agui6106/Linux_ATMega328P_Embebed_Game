@@ -29,8 +29,6 @@ class App(Frame):
         # Variable GLOBAL lecutrua del serial
         self.serial_device: SerialSensor | None = None
         
-        self.bauds = self.return_bauds()
-        
         # - Eleemntos graficos juegos - #
         self.creators_names_label: Label = self._create_creators_names_label()
         # Section 1 - Game select
@@ -99,8 +97,11 @@ class App(Frame):
             
     # - Juegos - #
     # Operativo - Seleccion de juego 
-    def play(self,  port, baudrate) -> None:
-        selected_value = self.avaibale_games.get()
+    def play(self) -> None:
+        selected_value = self.avaibale_games.get()    
+        baudrate = self.frame_settings.return_bauds()
+        port = self.frame_settings.return_device()
+        
         if (selected_value == "1945"):
             subprocess.run(["python3", "./1945/game.py"])
 
@@ -111,7 +112,7 @@ class App(Frame):
             subprocess.run(["python3", "./DOOM-style-Game/main.py"])
         
         elif selected_value == "Control Test":
-            subprocess.Popen(["python3", "./Control_test.py", port, str(baudrate)])
+            subprocess.Popen(["python3", "./Control_test.py", port, baudrate])
    
     # Visual - Boton seleccion del juego    
     def _Create_play_button(self) -> Button:
@@ -120,7 +121,7 @@ class App(Frame):
             text = 'Play',
             font=("Z003",15,"bold"),
             cursor="trek",
-            command=self.play(self, self.return_bauds())
+            command=self.play
         )
     
     # Visual - seleccionar el juego que deseamos
