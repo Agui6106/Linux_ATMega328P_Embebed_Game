@@ -4,6 +4,7 @@ import time
 #Librerias de 3ros
 import serial
 
+
 #Archivos locales
 
 BAUDRATES = [   #Velocidad a la que se envian o reciben los caracteres
@@ -33,7 +34,7 @@ class SerialSensor:
             self.connection_time = connection_time
             self.reception_time = reception_time
             time.sleep(connection_time)
-            recieved = self.send('OK')
+            #recieved = self.send('OK')
             
     def send(self, to_send:str) -> str:
         self._serial.write(to_send.encode('utf-8')) #Codificar
@@ -41,12 +42,15 @@ class SerialSensor:
         recieved = self._serial.readline()
         return recieved.decode(encoding='utf-8') #Decodificar
     
-    def recieve(self,) -> str:
+    def reception(self,) -> str:
         recieved = self._serial.readline()
-        return recieved
+        return recieved.decode('utf-8')
     
     def is_open(self):
         return self._serial.is_open
+    
+    def in_waiting(self):
+        return self._serial.in_waiting
     
     def close(self) -> None:
         self._serial.close()

@@ -8,7 +8,9 @@ from tkinter import Canvas
 from tkinter import PhotoImage
 
 import subprocess
-import os
+import pygame
+from pygame.locals import QUIT
+from serial import SerialException
 
 from tkinter.ttk import Combobox
 
@@ -23,6 +25,9 @@ class App(Frame):
     def __init__(self, parent, *args, **kwargs):       
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent:Tk = parent
+        
+        # Variable GLOBAL lecutrua del serial
+        self.serial_device: SerialSensor | None = None
         
         # - Eleemntos graficos juegos - #
         self.creators_names_label: Label = self._create_creators_names_label()
@@ -96,9 +101,14 @@ class App(Frame):
         selected_value = self.avaibale_games.get()
         if (selected_value == "1945"):
             subprocess.run(["python3", "./1945/game.py"])
+            
+        elif selected_value == "Control Test":
+            pygame_app = PygameApp(self.serial_device)
+            pygame_app.run()
         
-        if (selected_value == "Control Test"):
-            subprocess.run(["python3", "control_test.py"])
+        elif selected_value == "Aseivo":
+            subprocess.run(["python3", "./aseivo.py"])
+
             
     # Visual - Boton seleccion del juego    
     def _Create_play_button(self) -> Button:
@@ -106,6 +116,7 @@ class App(Frame):
             master=self,
             text = 'Play',
             font=("Z003",15,"bold"),
+            cursor="trek",
             command=self.play
         )
     
@@ -117,7 +128,7 @@ class App(Frame):
             values = games_vals,
             width=30,
             state="readonly",
-            cursor='star',            
+            cursor='exchange',            
             font=("C059", 15), 
             justify=("center"),  
         )
@@ -129,7 +140,7 @@ class App(Frame):
             text = 'Scores',
             command = self.show_frame_scores,
             width=20,
-            cursor='spider',
+            cursor='star',
             font=("Z003",15,"bold")
         )
     
@@ -168,7 +179,7 @@ class App(Frame):
             text = 'Settings',
             command = self.show_settings_frame,
             width=20,
-            cursor='spider',
+            cursor='spraycan',
             font=("Z003",15,"bold")
         )
     
@@ -187,7 +198,7 @@ class App(Frame):
             text = 'Credits',
             command = self.show_frame_Credits,
             width=20,
-            cursor='spider',
+            cursor='heart',
             font=("Z003",15,"bold")
         )
     
@@ -225,8 +236,9 @@ class FrameTwo(Frame):
     def __init__(self, parent, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent: Tk = parent
-        # Esta variable puede ser del tipo sensor o nada
+        
         self.serial_device: SerialSensor | None = None
+        
         #  Creacion de elementos graficos
         self.serial_devices_combobox: Combobox = self._init_serial_devices_combobox()
         self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
@@ -337,7 +349,6 @@ class FrameTwo(Frame):
             return
         messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
     
-
 # UP Socres frame
 class FrameThree(Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -355,6 +366,48 @@ class FrameFour(Frame):
 
         # Ejemplo de contenido para FrameTwo
         Label(self, text="This is credits Frame").pack()
+        
+# -- PyGame Control test
+class PygameApp:
+    def __init__(self, serial_device):
+        pygame.init()
+        pygame.display.set_caption("Control Test")
+        self.resolution = (500, 500)
+        self.screen = pygame.display.set_mode(self.resolution, 0, 32)
+        self.clock = pygame.time.Clock()
+        self.serial_device: SerialSensor | None = None
+        
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+
+            self.screen.fill((0, 0, 0))
+
+            # Aquí puedes agregar el código para leer del puerto serial y dibujar en la pantalla
+            if self.serial_device:
+                try:
+                    # Enviar un comando y recibir respuesta
+                    sent_command = "your_command_here: "
+                    response = self.serial_device.send(sent_command)
+                    print(f"Respuesta recibida: {response}")
+
+                    # Recibir datos continuamente
+                    received_data = self.serial_device.reception()
+                    if received_data:
+                        print(f"Datos recibidos: {received_data}")
+
+                    # Agrega aquí el código para manejar los datos recibidos y dibujar en la pantalla
+                except SerialException as e:
+                    print(f"Error leyendo del dispositivo serial: {e}")
+                    self.serial_device = None  # Desconecta el dispositivo si hay un error
+
+            pygame.display.update()
+            self.clock.tick(30)  # Limita la velocidad de fotogramas a 30 FPS
+
+        pygame.quit()
         
 # ------------------------------------------------------ #
 
