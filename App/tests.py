@@ -186,7 +186,7 @@ if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
     """
-
+"""
 # -- Bluethoot test -- #
 import serial
 import time
@@ -206,4 +206,179 @@ except KeyboardInterrupt:
 finally:
     port.close()
 
+"""
 
+# - Pygame and Pyseria - #       
+import pygame
+import serial
+import sys
+
+# Configuración del puerto serial
+ser = serial.Serial(
+    port='/dev/ttyUSB0',  # Reemplaza con el nombre de tu puerto
+    baudrate=9600,
+    timeout=1
+)
+
+# Inicializar Pygame
+pygame.init()
+
+# Establecer dimensiones de la pantalla
+screen = pygame.display.set_mode((800, 600))
+
+# Título de la ventana
+pygame.display.set_caption('Control de Pygame con PySerial')
+
+# Colores
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+
+# Posición inicial del círculo
+x, y = 400, 300
+radius = 30
+speed = 5
+
+# Fuente para la caja de texto
+font = pygame.font.Font(None, 32)
+input_box = pygame.Rect(100, 100, 140, 32)
+color_inactive = pygame.Color('lightskyblue3')
+color_active = pygame.Color('dodgerblue2')
+color = color_inactive
+active = False
+text = ''
+
+# Función para leer datos del puerto serial
+def read_serial():
+    if ser.in_waiting > 0:
+        try:
+            data = ser.readline().decode().strip()
+            return data
+        except:
+            return None
+    return None
+
+# Bucle principal del juego
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Si el usuario hace clic en la caja de texto
+            if input_box.collidepoint(event.pos):
+                active = not active
+            else:
+                active = False
+            color = color_active if active else color_inactive
+        if event.type == pygame.KEYDOWN:
+            if active:
+                if event.key == pygame.K_RETURN:
+                    # Enviar el texto por el puerto serial
+                    ser.write(text.encode())
+                    text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    text = text[:-1]
+                else:
+                    text += event.unicode
+
+    # Leer datos del puerto serial
+    command = read_serial()
+    if command:
+        if command == 'LEFT':
+            x -= speed
+        elif command == 'RIGHT':
+            x += speed
+        elif command == 'UP':
+            y -= speed
+        elif command == 'DOWN':
+            y += speed
+
+    # Limpiar la pantalla
+    screen.fill(BLACK)
+
+    # Dibujar el círculo
+    pygame.draw.circle(screen, WHITE, (x, y), radius)
+
+    # Renderizar el texto
+    txt_surface = font.render(text, True, color)
+    width = max(200, txt_surface.get_width() + 10)
+    input_box.w = width
+    screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+    pygame.draw.rect(screen, color, input_box, 2)
+
+    # Actualizar la pantalla
+    pygame.display.flip()
+
+    # Controlar la velocidad del bucle
+    pygame.time.Clock().tick(60)
+
+# Cerrar el puerto serial
+ser.close()
+
+# Salir de Pygame
+pygame.quit()
+sys.exit()
+
+"""
+    # -- PyGame Control test
+class PygameApp:
+    def __init__(self, serial_device):
+        pygame.init()
+        pygame.display.set_caption("Control Test")
+        self.resolution = (500, 500)
+        self.screen = pygame.display.set_mode(self.resolution, 0, 32)
+        self.clock = pygame.time.Clock()
+        self.serial_device: SerialSensor | None = None
+    
+    # Fuente para la caja de texto
+    font = pygame.font.Font(None, 32)
+    input_box = pygame.Rect(100, 100, 140, 32)
+    color_inactive = pygame.Color('lightskyblue3')
+    color_active = pygame.Color('dodgerblue2')
+    color = color_inactive
+    active = False
+    text = ''
+    
+    # Función para leer datos del puerto serial
+    def read_serial():
+        if self.serial_device.in_waiting > 0:
+            try:
+                data = ser.readline().decode().strip()
+                return data
+            except:
+                return None
+        return None
+        
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+
+            self.screen.fill((0, 0, 0))
+
+            # Aquí puedes agregar el código para leer del puerto serial y dibujar en la pantalla
+            if self.serial_device:
+                try:
+                    # Enviar un comando y recibir respuesta
+                    sent_command = "your_command_here: "
+                    response = self.serial_device.send(sent_command)
+                    print(f"Respuesta recibida: {response}")
+
+                    # Recibir datos continuamente
+                    received_data = self.serial_device.reception()
+                    if received_data:
+                        print(f"Datos recibidos: {received_data}")
+
+                    # Agrega aquí el código para manejar los datos recibidos y dibujar en la pantalla
+                except SerialException as e:
+                    print(f"Error leyendo del dispositivo serial: {e}")
+                    self.serial_device = None  # Desconecta el dispositivo si hay un error
+
+            pygame.display.update()
+            self.clock.tick(30)  # Limita la velocidad de fotogramas a 30 FPS
+
+        pygame.quit()
+"""

@@ -29,6 +29,8 @@ class App(Frame):
         # Variable GLOBAL lecutrua del serial
         self.serial_device: SerialSensor | None = None
         
+        self.bauds = self.return_bauds()
+        
         # - Eleemntos graficos juegos - #
         self.creators_names_label: Label = self._create_creators_names_label()
         # Section 1 - Game select
@@ -97,22 +99,20 @@ class App(Frame):
             
     # - Juegos - #
     # Operativo - Seleccion de juego 
-    def play(self) -> None:
+    def play(self,  port, baudrate) -> None:
         selected_value = self.avaibale_games.get()
         if (selected_value == "1945"):
             subprocess.run(["python3", "./1945/game.py"])
-            
-        elif selected_value == "Control Test":
-            pygame_app = PygameApp(self.serial_device)
-            pygame_app.run()
-        
+
         elif selected_value == "Aseivo":
             subprocess.run(["python3", "./aseivo.py"])
             
         elif selected_value == "PyDOOM":
-            subprocess.run(["python3", "/home/ingesitos/Documents/DOOM-style-Game/main.py"])
-
-            
+            subprocess.run(["python3", "./DOOM-style-Game/main.py"])
+        
+        elif selected_value == "Control Test":
+            subprocess.Popen(["python3", "./Control_test.py", port, str(baudrate)])
+   
     # Visual - Boton seleccion del juego    
     def _Create_play_button(self) -> Button:
         return Button(
@@ -120,7 +120,7 @@ class App(Frame):
             text = 'Play',
             font=("Z003",15,"bold"),
             cursor="trek",
-            command=self.play
+            command=self.play(self, self.return_bauds())
         )
     
     # Visual - seleccionar el juego que deseamos
@@ -263,6 +263,13 @@ class FrameTwo(Frame):
         # Others Settings
         self.baudrate_combobox.current(0) # No esta seleccionado
     
+    # Regresemos como variables globales lo seleccionado
+    def return_bauds(self) :
+        return self.baudrate_combobox.get()
+
+    def return_device(self) :
+        return self.serial_devices_combobox.get()
+    
     # - Titulo - #
     def _create_Settings_label(self) -> Label:
         return Label(
@@ -369,48 +376,6 @@ class FrameFour(Frame):
 
         # Ejemplo de contenido para FrameTwo
         Label(self, text="This is credits Frame").pack()
-        
-# -- PyGame Control test
-class PygameApp:
-    def __init__(self, serial_device):
-        pygame.init()
-        pygame.display.set_caption("Control Test")
-        self.resolution = (500, 500)
-        self.screen = pygame.display.set_mode(self.resolution, 0, 32)
-        self.clock = pygame.time.Clock()
-        self.serial_device: SerialSensor | None = None
-        
-    def run(self):
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    running = False
-
-            self.screen.fill((0, 0, 0))
-
-            # Aquí puedes agregar el código para leer del puerto serial y dibujar en la pantalla
-            if self.serial_device:
-                try:
-                    # Enviar un comando y recibir respuesta
-                    sent_command = "your_command_here: "
-                    response = self.serial_device.send(sent_command)
-                    print(f"Respuesta recibida: {response}")
-
-                    # Recibir datos continuamente
-                    received_data = self.serial_device.reception()
-                    if received_data:
-                        print(f"Datos recibidos: {received_data}")
-
-                    # Agrega aquí el código para manejar los datos recibidos y dibujar en la pantalla
-                except SerialException as e:
-                    print(f"Error leyendo del dispositivo serial: {e}")
-                    self.serial_device = None  # Desconecta el dispositivo si hay un error
-
-            pygame.display.update()
-            self.clock.tick(30)  # Limita la velocidad de fotogramas a 30 FPS
-
-        pygame.quit()
         
 # ------------------------------------------------------ #
 
