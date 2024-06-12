@@ -2,6 +2,7 @@
 import pygame
 import serial
 import sys
+import time
 
 # Verifcamos herecnia de componentes
 if len(sys.argv) != 3:
@@ -37,14 +38,34 @@ x, y = 400, 300
 radius = 30
 speed = 5
 
-# Fuente para la caja de texto
+# Fuente para escribir un texto
 font = pygame.font.Font(None, 32)
-input_box = pygame.Rect(100, 500, 140, 32)
+input_box = pygame.Rect(20, 50, 700, 32)
 color_inactive = pygame.Color('lightskyblue3')
 color_active = pygame.Color('dodgerblue2')
 color = color_inactive
 active = False
 text = ''
+
+# Solicitar un comando. Mostrar texto
+text_surface = font.render("Input a command:", True, WHITE)
+
+# Texto recibido. Mostar texto fijo
+recv_txt = font.render("Received command:", True, WHITE)
+
+# - Reaccion a botones - #
+# Start
+strt_text_surface = font.render("Start Button", True, WHITE)
+show_start_text = False  # Variable de estado para controlar la visibilidad del tstrt
+# Escape
+escape_text_surface = font.render("Escape Button", True, WHITE)
+show_escape_text = False  # Variable de estado para controlar la visibilidad del texto
+# Jump
+jump_text_surface = font.render("Jump Button", True, WHITE)
+show_jump_text = False  # Variable de estado para controlar la visibilidad del texto
+# Shoot
+shoot_text_surface = font.render("Shoot Button", True, WHITE)
+show_shoot_text = False  # Variable de estado para controlar la visibilidad del texto
 
 # Función para leer datos del puerto serial
 def read_serial():
@@ -62,42 +83,78 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Si el usuario hace clic en la caja de texto
             if input_box.collidepoint(event.pos):
                 active = not active
             else:
                 active = False
             color = color_active if active else color_inactive
+            
         if event.type == pygame.KEYDOWN:
             if active:
                 if event.key == pygame.K_RETURN:
-                    # Enviar el texto por el puerto serial
                     ser.write(text.encode())
                     text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
                 else:
                     text += event.unicode
+    
+    # Rellenar la pantalla con negro
+    screen.fill(BLACK)
 
-    # Leer datos del puerto serial
+    # Dibujar el círculo
+    pygame.draw.circle(screen, WHITE, (x, y), radius)
+
+    # Renderizar el texto de entrada
+    txt_surface = font.render(text, True, color)
+    width = max(200, txt_surface.get_width() + 10)
+    input_box.w = width
+    screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+    pygame.draw.rect(screen, color, input_box, 2)
+
+    # - Mostrar texto en la pantalla - #
+    # Input a command
+    screen.blit(text_surface, (20, 20))
+    # Received 
+    screen.blit(text_surface, (20, 20))
+    
+    # Reaccion a botones
+    if show_start_text:
+        screen.blit(strt_text_surface, (20, 100))
+    if show_escape_text:
+        screen.blit(escape_text_surface, (20, 200))
+    if show_jump_text:
+        screen.blit(jump_text_surface, (20, 300)) 
+    if show_shoot_text:
+        screen.blit(shoot_text_surface, (20, 400))
+    # Actualizar la pantalla
+    pygame.display.flip()
+
+    # - Leer datos del puerto serial - #
     command = read_serial()
     if command:
-        # Izqueirda
+        # Inputs Joystick
         if command == 'I':
             x -= speed
-        
-        # Derecha
         elif command == 'D':
             x += speed
-        
-        # Arriba
         elif command == 'A':
             y -= speed
-            
-        # abajo
         elif command == 'a':
             y += speed
+        # Inputs Botones
+        elif command == 'Str':
+            show_start_text = True
+        elif command == 'Esc':
+            show_escape_text = True    
+        elif command == 'Jmp':
+            show_jump_text = True
+        elif command == 'Sho':
+            show_shoot_text = True
+            
+
     
     """
         Received command list:
@@ -108,30 +165,19 @@ while running:
             Abajo = a
             
         - Acciones
-            Start = str
-            Escape = esc
-            Jump = jmp
-            Shoot = sho
+            Start On = str
+            Escape On = esc
+            Jump On = jmp
+            Shoot On = sho
+            
+            Start Off = st0
+            Escape Off = es0
+            Jump Off = jm0
+            Shoot Off = sh0
         
         Sent command list:
     """
-
-    # Limpiar la pantalla
-    screen.fill(BLACK)
-
-    # Dibujar el círculo
-    pygame.draw.circle(screen, WHITE, (x, y), radius)
-
-    # Renderizar el texto
-    txt_surface = font.render(text, True, color)
-    width = max(200, txt_surface.get_width() + 10)
-    input_box.w = width
-    screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
-    pygame.draw.rect(screen, color, input_box, 2)
-
-    # Actualizar la pantalla
-    pygame.display.flip()
-
+    
     # Controlar la velocidad del bucle
     pygame.time.Clock().tick(60)
 
