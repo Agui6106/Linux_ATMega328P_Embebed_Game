@@ -19,7 +19,7 @@ from serial_sensor import BAUDRATES
 from serial_sensor import SerialSensor
 
 # List of avaiblae games
-GAMES = ['1945', 'Aseivo', 'Control Test' ]
+GAMES = ['1945', 'Aseivo', 'PyDOOM' ,'Control Test' ]
 
 class App(Frame):
     def __init__(self, parent, *args, **kwargs):       
@@ -108,6 +108,9 @@ class App(Frame):
         
         elif selected_value == "Aseivo":
             subprocess.run(["python3", "./aseivo.py"])
+            
+        elif selected_value == "PyDOOM":
+            subprocess.run(["python3", "/home/ingesitos/Documents/DOOM-style-Game/main.py"])
 
             
     # Visual - Boton seleccion del juego    
