@@ -83,14 +83,38 @@ while running:
     # Leer datos del puerto serial
     command = read_serial()
     if command:
-        if command == 'LEFT':
+        # Izqueirda
+        if command == 'I':
             x -= speed
-        elif command == 'RIGHT':
+        
+        # Derecha
+        elif command == 'D':
             x += speed
-        elif command == 'UP':
+        
+        # Arriba
+        elif command == 'A':
             y -= speed
-        elif command == 'DOWN':
+            
+        # abajo
+        elif command == 'a':
             y += speed
+    
+    """
+        Received command list:
+        - Movement
+            Izquierda = I
+            Derecha = D
+            Arriba = A
+            Abajo = a
+            
+        - Acciones
+            Start = str
+            Escape = esc
+            Jump = jmp
+            Shoot = sho
+        
+        Sent command list:
+    """
 
     # Limpiar la pantalla
     screen.fill(BLACK)
