@@ -7,8 +7,13 @@ from tkinter import Tk
 from tkinter import Canvas
 from tkinter import PhotoImage
 from tkinter import Text
+from tkinter import Event  # Añadir importación de Event
+
 
 import subprocess
+import socket
+import threading
+
 from pygame.locals import QUIT
 
 from tkinter.ttk import Combobox
@@ -19,6 +24,62 @@ from serial_sensor import SerialSensor
 
 # List of avaiblae games
 GAMES = ['1945', 'Aseivo', 'PyDOOM' ,'Control Test' ]
+
+# - Inicialziacion del server - #
+class GameServer:
+    
+    # Configruacion de aprametros del server
+    def __init__(self, host='0.0.0.0', port=3333):
+        self.host = host
+        self.port = port
+        self.high_score = 0
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.bind((self.host, self.port))
+    
+    # Inicializar servidor
+    def start(self):
+        self.server_socket.listen(5)
+        print(f"Server started on {self.host}:{self.port}")
+        try:
+            while True:
+                client_socket, client_address = self.server_socket.accept()
+                print(f"New connection from {client_address}")
+                # Manage each client in a separate thread
+                client_thread = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
+                client_thread.start()
+        except Exception as e:
+            print(f"Server error: {e}")
+        finally:
+            self.server_socket.close()
+            
+    # Comunicacion con el cliente
+    def handle_client(self, client_socket, client_address):
+        try:
+            while True:
+                message = client_socket.recv(1024)
+                if not message:
+                    break
+                decoded_message = message.decode('utf-8')
+                print(f"Received message from {client_address}: {decoded_message}")
+
+                if decoded_message == 'GET_HIGH_SCORE':
+                    client_socket.sendall(str(self.high_score).encode())
+                else:
+                    try:
+                        new_high_score = int(decoded_message)
+                        self.high_score = max(self.high_score, new_high_score)
+                        print(f"Updated high score to {self.high_score}")
+                    except ValueError:
+                        print("Invalid data received.")
+        except Exception as e:
+            print(f"Error with client {client_address}: {e}")
+        finally:
+            print(f"Closing connection with {client_address}")
+            client_socket.close()
+        
+
+
 
 class App(Frame):
     def __init__(self, parent, *args, **kwargs):       
@@ -76,7 +137,7 @@ class App(Frame):
         self.frame_Credits = FrameFour(self.main_frame)
 
         # Inicialmente mostrar solo FrameOne (Scores)
-        self.frame_scores.pack(fill="both", expand=True)
+        self.frame_settings.pack(fill="both", expand=True)
         
         # - Ubicacion de elementos graficos - #
         # Game select - Section 1
@@ -223,13 +284,17 @@ class FrameOne(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         
+        # Referenciamos el servidor
+        self.game_server = GameServer
+        
         # - Inicializamos los elemntos  - #
         self.title: Label = self._create_Scores_label()
         self.scores_txt: Text = self._create_scores_text()
+
         
         # - Escribimso los scores locales - #
         self.scores_txt.insert('1.0','                     - Actual Scores - \n')
-        self.scores_txt.insert('3.0',' 1945   - 0000 \n')
+        self.scores_txt.insert('3.0', ' 1945   - 0000 \n')
         self.scores_txt.insert('4.0',' Aseivo - 0000 \n')
         self.scores_txt.insert('5.0',' PyDoom -  N/A \n')
         
@@ -260,6 +325,8 @@ class FrameOne(Frame):
             width=60,
             height= 5
         )
+    
+
 
 # Settings Frame
 class FrameTwo(Frame):
@@ -275,8 +342,6 @@ class FrameTwo(Frame):
         self.baudrate_combobox: Combobox = self._create_baudrate_combobox()
         self.connet_button: Button = self._create_connect_button()
         self.title_label: Label = self._create_Settings_label()
-        #self.temperature_label: Label = self._create_temperature_label()
-        #self.read_temperature_button: Button = self._create_temperature_button()
         
         self.init_gui()
     
@@ -378,44 +443,7 @@ class FrameTwo(Frame):
             cursor='spider',
             font=("Helvetica",12,"bold")
         ) 
-
-    # Operativo - Lectura de serial 
-    def read_serial(self) -> None:
-        if self.serial_device is not None:
-            temperature = self.serial_device.send('TC2')
-            self.temperature_label['text'] = f"{temperature[1:-4]} C"
-            return
-        messagebox.showerror(title='Serial connection error', message='Serial device not initializate')
-    
-# UP Socres frame
-class FrameThree(Frame):
-    def __init__(self, parent, *args, **kwargs):
-        Frame.__init__(self, parent, *args, **kwargs)
-        self.parent = parent
-
-        # - Inicializamos los elemntos  - #
-        self.UpS_title: Label = self._create_UPScores_label()
-        
-        # - Escribimso los scores locales - #
-        
-        
-        self.init_gui()
-        
-    # Inicialziamos los elemntos graficos
-    def init_gui(self,) -> None:
-        self.UpS_title.grid(row=0, column=0, columnspan=2,padx=40)
-    
-    # -- Funciones -- #
-    
-    # - Titulo - #
-    def _create_UPScores_label(self) -> Label:
-        return Label(
-            master = self,
-            text = 'Scores Upload',
-            foreground = 'black',
-            font=("Z003",20,"bold")
-        )
-        
+      
 # Credits Frame   
 class FrameFour(Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -506,5 +534,13 @@ class FrameFour(Frame):
 root = Tk()
 
 if __name__ == '__main__':
+    # Inicializar el servidor primero
+    server = GameServer(host='0.0.0.0', port=3333)
+    server_thread = threading.Thread(target=server.start)
+    server_thread.start()
+    
+    # Inicio de app
     ex = App(root)
     root.mainloop()
+    
+    

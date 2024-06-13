@@ -8,6 +8,25 @@ import random
 import sys
 import serial
 
+import socket
+
+# Inicializamos client
+def get_high_score():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(b'GET_HIGH_SCORE')
+        data = s.recv(1024)
+    return int(data.decode())
+
+def send_high_score(score):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(str(score).encode())
+
+# Configuración del cliente
+HOST = '0.0.0.0'  # Dirección IP del servidor
+PORT = 3333         # Puerto en el que el servidor está escuchando
+
 # - SERIAL INITIALIZE - #
 # Verifcamos herecnia de componentes
 if len(sys.argv) != 3:
@@ -51,6 +70,7 @@ def read_serial():
         except:
             return None
     return None
+
 
 class Animation:
  
@@ -106,7 +126,6 @@ class Player(object):
     def update(self):
         
         #Get the current key state.
-        key = pygame.key.get_pressed()
         command = read_serial()
         
         #Move left/right
@@ -299,6 +318,7 @@ def draw_stats():
     high_score_text = custom_font.render("HIGH SCORE", True, gold)
     p1_points_text = custom_font.render(str(p1.score), True, light_grey)
     high_score_points = custom_font.render(str(p1.score), True, light_grey)
+    send_high_score(p1.score)
     p1_bomb_text = custom_font.render(str(p1.bombs), True, light_grey)
     screen.blit(p1_score_text, (10, 5))
     screen.blit(high_score_text, (187, 5))
@@ -324,7 +344,7 @@ def draw_stats():
         screen.blit(p1_life, (10,455))
         screen.blit(p1_life, (38,455))
     elif p1.lives == 1:
-        screen.blit(p1_life, (10,455))
+        screen.blit(p1_life, (10,455))                
 
 def check_hit():
     for e in enemies:
