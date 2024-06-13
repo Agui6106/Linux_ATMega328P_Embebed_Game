@@ -73,7 +73,6 @@ class App(Frame):
         # Centro de control
         self.frame_scores = FrameOne(self.main_frame)
         self.frame_settings = FrameTwo(self.main_frame)
-        self.frame_UP_Scores = FrameThree(self.main_frame)
         self.frame_Credits = FrameFour(self.main_frame)
 
         # Inicialmente mostrar solo FrameOne (Scores)
@@ -81,7 +80,7 @@ class App(Frame):
         
         # - Ubicacion de elementos graficos - #
         # Game select - Section 1
-        self.avaibale_games.grid(row=1, column=0, sticky="n", columnspan=2, padx=20)
+        self.avaibale_games.grid(row=1, column=0,columnspan=2, padx=20)
         self.play_button.grid(row=2, column=0, sticky= "n", columnspan=2, padx=20, pady= 10)
         
         # App Control - Section 2
@@ -150,28 +149,35 @@ class App(Frame):
         self.frame_scores.pack(fill="both", expand=True)
         self.frame_settings.pack_forget()
         self.frame_Credits.pack_forget()
-        self.frame_UP_Scores.pack_forget()
     
     # Visual - Upload Scores
     def _create_UP_scores_button(self) -> Button:
         return Button(
             master = self,
             text = 'Upload Scores',
-            command = self.show_frame_UP_Scores,
+            command = self.message_Scores,
             width=20,
             cursor='spider',
             justify='center',
             font=("Z003",15,"bold")
         )
     
-    # Operativo - Cambio al Frame de UP Socres
-    def show_frame_UP_Scores(self):
-        self.frame_UP_Scores.pack_forget()
-        self.frame_UP_Scores.pack(fill="both", expand=True)
-        self.frame_settings.pack_forget()
-        self.frame_Credits.pack_forget()
-        self.frame_scores.pack_forget()
-    
+    # Operativo - Want to up scores?
+    def message_Scores(self) -> None:
+        user_response = messagebox.askokcancel(
+            title="Upload Scores", 
+            message="Want to upload scores to web?"
+        )
+        
+        if user_response:
+            print("User chose to upload scores")
+            #subprocess.run(["python3", "./Server/socket.py"])
+            
+            # We are ready to start sockest :D
+            
+        else:
+            print("User chose not to upload scores")
+                
     # Visual - Local Settings
     def _create_Settings_button(self) -> Button:
         return Button(
@@ -189,7 +195,6 @@ class App(Frame):
         self.frame_settings.pack(fill="both", expand=True)
         self.frame_scores.pack_forget()
         self.frame_Credits.pack_forget()
-        self.frame_UP_Scores.pack_forget()
     
     # Visual - Credits
     def _create_Credits_button(self) -> Button:
@@ -207,7 +212,6 @@ class App(Frame):
         self.frame_Credits.pack_forget()
         self.frame_Credits.pack(fill="both", expand=True)
         self.frame_settings.pack_forget()
-        self.frame_UP_Scores.pack_forget()
         self.frame_scores.pack_forget()
         
 # -- Frames de control (Section 3)-- #
@@ -388,14 +392,16 @@ class FrameThree(Frame):
         self.parent = parent
 
         # - Inicializamos los elemntos  - #
+        self.UpS_title: Label = self._create_UPScores_label()
         
         # - Escribimso los scores locales - #
+        
         
         self.init_gui()
         
     # Inicialziamos los elemntos graficos
     def init_gui(self,) -> None:
-        pass
+        self.UpS_title.grid(row=0, column=0, columnspan=2,padx=40)
     
     # -- Funciones -- #
     
@@ -408,7 +414,6 @@ class FrameThree(Frame):
             font=("Z003",20,"bold")
         )
         
-     
 # Credits Frame   
 class FrameFour(Frame):
     def __init__(self, parent, *args, **kwargs):
