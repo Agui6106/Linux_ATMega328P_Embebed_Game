@@ -9,9 +9,7 @@ from tkinter import PhotoImage
 from tkinter import Text
 
 import subprocess
-import pygame
 from pygame.locals import QUIT
-from serial import SerialException
 
 from tkinter.ttk import Combobox
 
@@ -373,13 +371,26 @@ class FrameFour(Frame):
         self.main_txt.insert('1.0',' \n')
         self.main_txt.insert('2.0','Games provided by:\n')
         self.main_txt.insert('3.0',' - 1945 by Haroon Khalid\n')
-        self.main_txt.insert('4.0',' - Aseivo by Axel Camacho Vilalfuertes\n')
+        self.main_txt.insert('4.0',' - Aseivo by Axel Camacho Villafuerte\n')
         self.main_txt.insert('5.0',' - PyDoom by StanislavPetrovV\n')
         
         # Nostros 
         self.main_txt.insert('6.0',' \n')
         self.main_txt.insert('7.0','Crafted with passion and love by NestSystems Inc. Team:\n')
+        self.main_txt.insert('8.0',' - Guadalupe Paulina López Cuevas - A01701095\n')
+        self.main_txt.insert('9.0',' - Jorge Israel Sandoval Sánchez - A017010373\n')
+        self.main_txt.insert('10.0',' - Jose Alberto Aguilar Sanchez - A01735612\n')
         
+        # Agradecimientos
+        self.main_txt.insert('11.0',' \n')
+        self.main_txt.insert('12.0','And lastley special thanks for: \n')
+        self.main_txt.insert('13.0',' - Mum and Dad for always staying with me <3 \n')
+        self.main_txt.insert('14.0',' - Aseivo for the help coding\n')
+        self.main_txt.insert('15.0',' - Rick for being my reason to continue studying\n')
+        self.main_txt.insert('16.0',' - Carracedo for the trust on me\n')
+        
+        self.main_txt.config(state='disabled')
+
         self.init_gui()
         
     # Inicialziamos los elemntos graficos
@@ -404,19 +415,30 @@ class FrameFour(Frame):
         return Text(
             master=self,
             width=60,
-            height= 10,
-            
+            height= 10
         )
     
     # US
     def _create_creators_names_label(self) -> Label:
-        return Label(
+        local_label = Label(
             master = self,
             text = 'With love: Paulina, Israel and Azuki',
             foreground = 'black',
             font=("Courier", 10),
             cursor='heart'
         )
+        local_label.bind("<Button-1>", self.on_label_click)  # Bind left mouse click event
+        return local_label
+    
+    # And an special dedicatory
+    def on_label_click(self, event):
+        messagebox.showinfo(
+            title="The wind rises!!!", 
+            message="Hope this proyect helps and inspire people around the world to continue imagineering")
+        print("Escúchame, niño japonés. \nLos aviones no son útiles para la guerra.")
+        print("No son para hacer dinero. \nLos aviones son hermosos sueños.\n")
+        print("Los ingenieros convierten los sueños en realidad.")
+        print("- Con amor Caproni")
         
 # ------------------------------------------------------ #
 
