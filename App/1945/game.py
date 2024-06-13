@@ -381,8 +381,10 @@ def check_plane_hit():
             
                 if e in enemies:
                     enemies.remove(e)
+                    ser.write('1'.encode())
                 if p in players:
                     players.remove(p)
+                    ser.write('2'.encode())
                     
 # SET UP THE FONT AND COLOR
 default_font = pygame.font.get_default_font()

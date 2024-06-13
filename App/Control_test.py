@@ -197,6 +197,7 @@ while running:
             Shoot Off = sh0
         
         Sent command list:
+        die -> Should do sth in control
     """
     
     # Controlar la velocidad del bucle
