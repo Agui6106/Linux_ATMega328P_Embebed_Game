@@ -158,11 +158,23 @@ while running:
         # Inputs Botones
         elif command == 'Str':
             show_start_text = True
+            show_escape_text = False
+            show_jump_text = False
+            show_shoot_text = False
         elif command == 'Esc':
-            show_escape_text = True    
+            show_start_text = False
+            show_escape_text = True
+            show_jump_text = False
+            show_shoot_text = False
         elif command == 'Jmp':
+            show_start_text = False
+            show_escape_text = False
             show_jump_text = True
+            show_shoot_text = False
         elif command == 'Sho':
+            show_start_text = False
+            show_escape_text = False
+            show_jump_text = False
             show_shoot_text = True
             
     """
