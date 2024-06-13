@@ -6,6 +6,7 @@ from tkinter import messagebox
 from tkinter import Tk
 from tkinter import Canvas
 from tkinter import PhotoImage
+from tkinter import Text
 
 import subprocess
 import pygame
@@ -29,8 +30,6 @@ class App(Frame):
         # Variable GLOBAL lecutrua del serial
         self.serial_device: SerialSensor | None = None
         
-        # - Eleemntos graficos juegos - #
-        self.creators_names_label: Label = self._create_creators_names_label()
         # Section 1 - Game select
         self.play_button: Button = self._Create_play_button()
         self.avaibale_games: Combobox = self._create_games_combobox()
@@ -92,8 +91,6 @@ class App(Frame):
         self.UPScores_butt.grid(row=3 ,column=1, sticky="w")
         self.settings_butt.grid(row=4, column=0, sticky="w", padx=10, pady=10)
         self.credtis_butt.grid(row=4 ,column=1, sticky="w")
-
-        #self.creators_names_label.grid(row=6, column=0, columnspan=2, sticky="w")
             
     # - Juegos - #
     # Operativo - Seleccion de juego 
@@ -109,6 +106,7 @@ class App(Frame):
             subprocess.run(["python3", "./aseivo.py"])
             
         elif selected_value == "PyDOOM":
+            messagebox.showwarning("Warning", "PyDoom only compatible with keyboard")
             subprocess.run(["python3", "./DOOM-style-Game/main.py"])
         
         elif selected_value == "Control Test":
@@ -213,17 +211,6 @@ class App(Frame):
         self.frame_settings.pack_forget()
         self.frame_UP_Scores.pack_forget()
         self.frame_scores.pack_forget()
-    
-    # US
-    def _create_creators_names_label(self) -> Label:
-        return Label(
-            master = self,
-            text = 'With love: Paulina, Israel, Aguilar',
-            background='black',
-            foreground = 'white',
-            font=("Courier", 10),
-            cursor='heart'
-        )
         
 # -- Frames de control (Section 3)-- #
 # Scores Frame
@@ -255,6 +242,7 @@ class FrameTwo(Frame):
         self.init_gui()
     
     def init_gui(self,) -> None:
+        # - Colocacion de elementos graficos
         self.title_label.grid(row=0, column=0, columnspan=2, sticky ='n',padx=40)
         self.serial_devices_combobox.grid(row=1, column=0, columnspan= 2,  padx=40)
         self.baudrate_combobox.grid(row = 2, column = 0, columnspan= 2, padx=40, pady= 10)
@@ -374,9 +362,61 @@ class FrameFour(Frame):
     def __init__(self, parent, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-
-        # Ejemplo de contenido para FrameTwo
-        Label(self, text="This is credits Frame").pack()
+        
+        # - Inicializamos los elemntos graficos - #
+        self.creators_names_label: Label = self._create_creators_names_label()
+        self.title_label: Label = self._create_Credits_label()
+        self.main_txt: Text = self._create_credits_text()
+        
+        # - Agregamos los credits - #
+        # Juegos
+        self.main_txt.insert('1.0',' \n')
+        self.main_txt.insert('2.0','Games provided by:\n')
+        self.main_txt.insert('3.0',' - 1945 by Haroon Khalid\n')
+        self.main_txt.insert('4.0',' - Aseivo by Axel Camacho Vilalfuertes\n')
+        self.main_txt.insert('5.0',' - PyDoom by StanislavPetrovV\n')
+        
+        # Nostros 
+        self.main_txt.insert('6.0',' \n')
+        self.main_txt.insert('7.0','Crafted with passion and love by NestSystems Inc. Team:\n')
+        
+        self.init_gui()
+        
+    # Inicialziamos los elemntos graficos
+    def init_gui(self,) -> None:
+        
+        
+        self.title_label.grid(row=0, column=0, columnspan=2,padx=40)
+        self.main_txt.grid(row=1, column=0,columnspan=2,rowspan=3, padx=5)
+        self.creators_names_label.grid(row=4, column=0, sticky="w")
+        
+    # - Titulo - #
+    def _create_Credits_label(self) -> Label:
+        return Label(
+            master = self,
+            text = 'Credits',
+            foreground = 'black',
+            font=("Z003",20,"bold")
+        )
+    
+    # - Contenido - #
+    def _create_credits_text(self) -> Text:
+        return Text(
+            master=self,
+            width=60,
+            height= 10,
+            
+        )
+    
+    # US
+    def _create_creators_names_label(self) -> Label:
+        return Label(
+            master = self,
+            text = 'With love: Paulina, Israel and Azuki',
+            foreground = 'black',
+            font=("Courier", 10),
+            cursor='heart'
+        )
         
 # ------------------------------------------------------ #
 
