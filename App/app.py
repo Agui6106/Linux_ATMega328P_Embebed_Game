@@ -216,9 +216,44 @@ class FrameOne(Frame):
     def __init__(self, parent, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-
-        # Ejemplo de contenido para FrameOne
-        Label(self, text="This is scores Frame").pack()
+        
+        # - Inicializamos los elemntos  - #
+        self.title: Label = self._create_Scores_label()
+        self.scores_txt: Text = self._create_scores_text()
+        
+        # - Escribimso los scores locales - #
+        self.scores_txt.insert('1.0','                     - Actual Scores - \n')
+        self.scores_txt.insert('3.0',' 1945   - 0000 \n')
+        self.scores_txt.insert('4.0',' Aseivo - 0000 \n')
+        self.scores_txt.insert('5.0',' PyDoom -  N/A \n')
+        
+        self.scores_txt.config(state='disabled')
+        
+        self.init_gui()
+        
+    # Inicialziamos los elemntos graficos
+    def init_gui(self,) -> None:
+        self.title.grid(row=0, column=0, columnspan=2,padx=40)
+        self.scores_txt.grid(row=1, column=0,columnspan=2,rowspan=3, padx=5)
+        
+    # -- Funciones -- #
+    
+    # - Titulo - #
+    def _create_Scores_label(self) -> Label:
+        return Label(
+            master = self,
+            text = 'Scores',
+            foreground = 'black',
+            font=("Z003",20,"bold")
+        )
+    
+    # - Contenido - #
+    def _create_scores_text(self) -> Text:
+        return Text(
+            master=self,
+            width=60,
+            height= 5
+        )
 
 # Settings Frame
 class FrameTwo(Frame):
@@ -352,8 +387,27 @@ class FrameThree(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
-        # Ejemplo de contenido para FrameTwo
-        Label(self, text="This is Upload Scores Frame").pack()
+        # - Inicializamos los elemntos  - #
+        
+        # - Escribimso los scores locales - #
+        
+        self.init_gui()
+        
+    # Inicialziamos los elemntos graficos
+    def init_gui(self,) -> None:
+        pass
+    
+    # -- Funciones -- #
+    
+    # - Titulo - #
+    def _create_UPScores_label(self) -> Label:
+        return Label(
+            master = self,
+            text = 'Scores Upload',
+            foreground = 'black',
+            font=("Z003",20,"bold")
+        )
+        
      
 # Credits Frame   
 class FrameFour(Frame):
@@ -361,7 +415,7 @@ class FrameFour(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         
-        # - Inicializamos los elemntos graficos - #
+        # - Inicializamos los elemntos  - #
         self.creators_names_label: Label = self._create_creators_names_label()
         self.title_label: Label = self._create_Credits_label()
         self.main_txt: Text = self._create_credits_text()
@@ -395,12 +449,11 @@ class FrameFour(Frame):
         
     # Inicialziamos los elemntos graficos
     def init_gui(self,) -> None:
-        
-        
         self.title_label.grid(row=0, column=0, columnspan=2,padx=40)
         self.main_txt.grid(row=1, column=0,columnspan=2,rowspan=3, padx=5)
         self.creators_names_label.grid(row=4, column=0, sticky="w")
-        
+    
+    # -- Funciones -- #    
     # - Titulo - #
     def _create_Credits_label(self) -> Label:
         return Label(
@@ -430,11 +483,12 @@ class FrameFour(Frame):
         local_label.bind("<Button-1>", self.on_label_click)  # Bind left mouse click event
         return local_label
     
-    # And an special dedicatory
+    # And an special message...
     def on_label_click(self, event):
         messagebox.showinfo(
             title="The wind rises!!!", 
             message="Hope this proyect helps and inspire people around the world to continue imagineering")
+        
         print("Escúchame, niño japonés. \nLos aviones no son útiles para la guerra.")
         print("No son para hacer dinero. \nLos aviones son hermosos sueños.\n")
         print("Los ingenieros convierten los sueños en realidad.")
