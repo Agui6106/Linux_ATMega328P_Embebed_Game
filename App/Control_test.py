@@ -2,7 +2,6 @@
 import pygame
 import serial
 import sys
-import time
 
 # Verifcamos herecnia de componentes
 if len(sys.argv) != 3:
@@ -47,11 +46,31 @@ color = color_inactive
 active = False
 text = ''
 
+# Función para leer datos del puerto serial
+def read_serial():
+    if ser.in_waiting > 0:
+        try:
+            data = ser.readline().decode().strip()
+            return data
+        except:
+            return None
+    return None
+
+# Función para mostrar el texto recibido del puerto serial
+def display_serial_text(screen, font, text, position):
+    if text:
+        serial_disp_txt = font.render(text, True, BLUE)
+        screen.blit(serial_disp_txt, position)
+
 # Solicitar un comando. Mostrar texto
 text_surface = font.render("Input a command:", True, WHITE)
 
 # Texto recibido. Mostar texto fijo
-recv_txt = font.render("Received command:", True, WHITE)
+recv_txt = font.render("Response:", True, WHITE)
+
+# Lo que recibi. Texto variable por la lectura serial
+serial_text = read_serial()
+serial_disp_txt = font.render(serial_text, True, BLUE)
 
 # - Reaccion a botones - #
 # Start
@@ -66,16 +85,6 @@ show_jump_text = False  # Variable de estado para controlar la visibilidad del t
 # Shoot
 shoot_text_surface = font.render("Shoot Button", True, WHITE)
 show_shoot_text = False  # Variable de estado para controlar la visibilidad del texto
-
-# Función para leer datos del puerto serial
-def read_serial():
-    if ser.in_waiting > 0:
-        try:
-            data = ser.readline().decode().strip()
-            return data
-        except:
-            return None
-    return None
 
 # Bucle principal del juego
 running = True
@@ -115,10 +124,13 @@ while running:
     pygame.draw.rect(screen, color, input_box, 2)
 
     # - Mostrar texto en la pantalla - #
-    # Input a command
+    # Input a command:
     screen.blit(text_surface, (20, 20))
-    # Received 
-    screen.blit(text_surface, (20, 20))
+    # Response:
+    screen.blit(recv_txt, (500, 20))
+    # Leer y mostrar datos del puerto serial
+    command = read_serial()
+    display_serial_text(screen, font, command, (500, 50))
     
     # Reaccion a botones
     if show_start_text:
@@ -132,8 +144,7 @@ while running:
     # Actualizar la pantalla
     pygame.display.flip()
 
-    # - Leer datos del puerto serial - #
-    command = read_serial()
+    # - Reaccionamos a la input recibida - #
     if command:
         # Inputs Joystick
         if command == 'I':
@@ -154,8 +165,6 @@ while running:
         elif command == 'Sho':
             show_shoot_text = True
             
-
-    
     """
         Received command list:
         - Movement
