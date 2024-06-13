@@ -6,6 +6,23 @@
 import pygame
 import random
 import sys
+import serial
+
+# - SERIAL INITIALIZE - #
+# Verifcamos herecnia de componentes
+if len(sys.argv) != 3:
+    print("Usage: python game.py <port> <baudrate>")
+    sys.exit(1)
+
+port = sys.argv[1]
+baudrate = int(sys.argv[2])
+
+# Configuración del puerto serial
+ser = serial.Serial(
+    port=port,  # Reemplaza con el nombre de tu puerto
+    baudrate=baudrate,
+    timeout=1
+)
 
 # INITIALIZE PYGAME
 pygame.init()
@@ -24,6 +41,16 @@ explosions = []
 players = []
 background = []
 waters = []
+
+# Función para leer datos del puerto serial
+def read_serial():
+    if ser.in_waiting > 0:
+        try:
+            data = ser.readline().decode().strip()
+            return data
+        except:
+            return None
+    return None
 
 class Animation:
  
@@ -80,15 +107,16 @@ class Player(object):
         
         #Get the current key state.
         key = pygame.key.get_pressed()
+        command = read_serial()
         
         #Move left/right
-        if key[pygame.K_LEFT]:
+        if command == 'I':
             self.rect.x -= 5
-        if key[pygame.K_RIGHT]:
+        if command == 'D':
             self.rect.x += 5
-        if key[pygame.K_UP]:
+        if command == 'A':
             self.rect.y -= 5
-        if key[pygame.K_DOWN]:
+        if command == 'a':
             self.rect.y += 5 
             
         self.draw(screen)
@@ -438,14 +466,19 @@ menu_screen.exit = 0
 
 
 # MAIN MENU LOOP
-while menu_screen.exit == 0:
+menu_screen_exit = False
+while not menu_screen_exit:
     for event in pygame.event.get():
-        key = pygame.key.get_pressed()
-    
-        if key[pygame.K_RETURN]:
-            menu_screen.exit = 1
-            start_snd.play()
-            break
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        
+    command = read_serial()
+    if command == 'Str':
+        menu_screen_exit = True
+        start_snd.play()
+        break
+        
     menu_screen.update()
 
 # MAIN GAME LOOP
@@ -454,20 +487,28 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
             sys.exit()
-        elif event.type == pygame.KEYDOWN:
+        
+    command = read_serial()    
+    if command:
+        if command == 'Esc':
+            pygame.quit()
+            sys.exit()
+        # Disparar
+        elif command == 'Sho':
             if len(players) > 0:
-                if event.key == pygame.K_SPACE:
-                    shot_snd.play()
-                    create_shot(0, p1.rect.x, p1.rect.y)
-                    p1.shots += 1
-                if event.key == pygame.K_LCTRL:
-                    p1.bombs -= 1
-
-            if event.key == pygame.K_F1:
-                if len(players) == 0:
-                    create_player()
+                shot_snd.play()
+                # Reemplaza los valores x e y con las coordenadas del jugador
+                create_shot(0, p1.rect.x, p1.rect.y)
+                p1.shots += 1
+                pass  # Implementa la lógica de disparo aquí
+        # Bombas
+        elif command == 'Jmp':
+            p1.bombs -= 1
+        
+        elif command == 'Str':
+            if len(players) == 0:
+                create_player()
                                     
-
     if play_musc == 1:
         pygame.mixer.music.play()
     play_musc = 0

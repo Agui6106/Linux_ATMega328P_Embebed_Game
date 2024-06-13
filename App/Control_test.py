@@ -186,10 +186,10 @@ while running:
             Abajo = a
             
         - Acciones
-            Start On = str
-            Escape On = esc
-            Jump On = jmp
-            Shoot On = sho
+            Start On = Str
+            Escape On = Esc
+            Jump On = Jmp
+            Shoot On = Sho
             
             Start Off = st0
             Escape Off = es0

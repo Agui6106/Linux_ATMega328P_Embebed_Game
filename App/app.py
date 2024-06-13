@@ -97,7 +97,10 @@ class App(Frame):
         port = self.frame_settings.return_device()
         
         if (selected_value == "1945"):
-            subprocess.run(["python3", "./1945/game.py"])
+            try:
+                subprocess.Popen(["python3", "./1945/game.py", port, baudrate])
+            except Exception as e:
+                messagebox.showerror('Error', f'Failed to start game: {str(e)}')
 
         elif selected_value == "Aseivo":
             subprocess.run(["python3", "./aseivo.py"])
@@ -172,7 +175,6 @@ class App(Frame):
         if user_response:
             print("User chose to upload scores")
             #subprocess.run(["python3", "./Server/socket.py"])
-            
             # We are ready to start sockest :D
             
         else:
