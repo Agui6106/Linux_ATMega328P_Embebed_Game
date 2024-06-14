@@ -27,7 +27,7 @@ GAMES = ['1945', 'Aseivo', 'PyDOOM' ,'Control Test' ]
 
 Global_Scores =0
 
-# - Inicialziacion del server - #
+# - Inicialziacion del server Socket - #
 class GameServer:
     
     # Configruacion de aprametros del server
@@ -90,8 +90,7 @@ class GameServer:
         print(f"{Global_Scores}")
         return Global_Scores
 
-
-
+# - Aplicacion Prinicapal - #
 class App(Frame):
     def __init__(self, parent, *args, **kwargs):       
         Frame.__init__(self, parent, *args, **kwargs)
@@ -333,8 +332,6 @@ class FrameOne(Frame):
             height= 5
         )
     
-
-
 # Settings Frame
 class FrameTwo(Frame):
     def __init__(self, parent, *args, **kwargs):
