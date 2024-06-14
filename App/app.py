@@ -25,6 +25,8 @@ from serial_sensor import SerialSensor
 # List of avaiblae games
 GAMES = ['1945', 'Aseivo', 'PyDOOM' ,'Control Test' ]
 
+Global_Scores =0
+
 # - Inicialziacion del server - #
 class GameServer:
     
@@ -32,7 +34,8 @@ class GameServer:
     def __init__(self, host='0.0.0.0', port=3333):
         self.host = host
         self.port = port
-        self.high_score = 0
+        self.high_score = Global_Scores
+        self.clients = []
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.host, self.port))
@@ -55,29 +58,37 @@ class GameServer:
             
     # Comunicacion con el cliente
     def handle_client(self, client_socket, client_address):
+        self.clients.append(client_socket)
         try:
             while True:
                 message = client_socket.recv(1024)
                 if not message:
                     break
-                decoded_message = message.decode('utf-8')
-                print(f"Received message from {client_address}: {decoded_message}")
-
-                if decoded_message == 'GET_HIGH_SCORE':
-                    client_socket.sendall(str(self.high_score).encode())
-                else:
-                    try:
-                        new_high_score = int(decoded_message)
-                        self.high_score = max(self.high_score, new_high_score)
-                        print(f"Updated high score to {self.high_score}")
-                    except ValueError:
-                        print("Invalid data received.")
+                self.high_score = message.decode('utf-8')
+                Global_Scores = self.high_score
+                print(f"Received message from {client_address}: {self.high_score}")
+                print(f" HS: {Global_Scores}")
+                self.broadcast_message(self.high_score, client_socket)
+                        
         except Exception as e:
             print(f"Error with client {client_address}: {e}")
         finally:
             print(f"Closing connection with {client_address}")
+            self.clients.remove(client_socket)
             client_socket.close()
-        
+
+
+    def broadcast_message(self, message, sender_socket):
+        for client in self.clients:
+            if client != sender_socket:  # Avoid sending the message back to the sender
+                try:
+                    client.sendall(message)
+                except Exception as e:
+                    print(f"Failed to send message to a client: {e}")
+                    
+    def get_high_score(self):
+        print(f"{Global_Scores}")
+        return Global_Scores
 
 
 
@@ -284,21 +295,17 @@ class FrameOne(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         
-        # Referenciamos el servidor
-        self.game_server = GameServer
-        
         # - Inicializamos los elemntos  - #
         self.title: Label = self._create_Scores_label()
         self.scores_txt: Text = self._create_scores_text()
-
         
         # - Escribimso los scores locales - #
         self.scores_txt.insert('1.0','                     - Actual Scores - \n')
-        self.scores_txt.insert('3.0', ' 1945   - 0000 \n')
-        self.scores_txt.insert('4.0',' Aseivo - 0000 \n')
-        self.scores_txt.insert('5.0',' PyDoom -  N/A \n')
+        self.scores_txt.insert('3.0', f' 1945   - {Global_Scores}\n')
+        self.scores_txt.insert('4.0',  ' Aseivo - 0000 \n')
+        self.scores_txt.insert('5.0',  ' PyDoom -  N/A \n')
         
-        self.scores_txt.config(state='disabled')
+        #self.scores_txt.config(state='disabled')
         
         self.init_gui()
         
@@ -307,7 +314,7 @@ class FrameOne(Frame):
         self.title.grid(row=0, column=0, columnspan=2,padx=40)
         self.scores_txt.grid(row=1, column=0,columnspan=2,rowspan=3, padx=5)
         
-    # -- Funciones -- #
+    # -- Funciones -- # 
     
     # - Titulo - #
     def _create_Scores_label(self) -> Label:
@@ -317,7 +324,7 @@ class FrameOne(Frame):
             foreground = 'black',
             font=("Z003",20,"bold")
         )
-    
+        
     # - Contenido - #
     def _create_scores_text(self) -> Text:
         return Text(

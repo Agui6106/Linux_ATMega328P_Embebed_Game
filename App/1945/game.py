@@ -9,19 +9,66 @@ import sys
 import serial
 
 import socket
+import threading
 
-# Inicializamos client
-def get_high_score():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-        s.sendall(b'GET_HIGH_SCORE')
-        data = s.recv(1024)
-    return int(data.decode())
+class GameClient:
+    def __init__(self, host='0.0.0.0', port=3333):
+        self.host = host
+        self.port = port
+        self.socket = None
+        self.running = False
 
-def send_high_score(score):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-        s.sendall(str(score).encode())
+    def connect(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((self.host, self.port))
+        self.running = True
+        print(f"Connected to server at {self.host}:{self.port}")
+
+        # Start a thread to receive messages from the server
+        receive_thread = threading.Thread(target=self.receive_messages)
+        receive_thread.start()
+
+    def receive_messages(self):
+        while self.running:
+            try:
+                data = self.socket.recv(1024)
+                if not data:
+                    break
+                print("Received:", data.decode())
+            except Exception as e:
+                print(f"Error receiving message: {e}")
+                break
+        self.close()
+
+    def send_high_score(self, score):
+        try:
+            self.socket.sendall(str(score).encode())
+        except Exception as e:
+            print(f"Error sending high score: {e}")
+
+    def close(self):
+        self.running = False
+        if self.socket:
+            self.socket.close()
+        print("Connection closed.")
+
+    def run(self):
+        try:
+            self.connect()
+        except Exception as e:
+            print(f"Connection error: {e}")
+        finally:
+            self.close()
+
+
+# Configuración del cliente
+HOST = '0.0.0.0'  # Dirección IP del servidor
+PORT = 3333  # Puerto en el que el servidor está escuchando
+
+# Inicializar el cliente
+game_client = GameClient(HOST, PORT)
+game_client.connect()
+
 
 # Configuración del cliente
 HOST = '0.0.0.0'  # Dirección IP del servidor
@@ -318,7 +365,6 @@ def draw_stats():
     high_score_text = custom_font.render("HIGH SCORE", True, gold)
     p1_points_text = custom_font.render(str(p1.score), True, light_grey)
     high_score_points = custom_font.render(str(p1.score), True, light_grey)
-    send_high_score(p1.score)
     p1_bomb_text = custom_font.render(str(p1.bombs), True, light_grey)
     screen.blit(p1_score_text, (10, 5))
     screen.blit(high_score_text, (187, 5))
@@ -354,6 +400,7 @@ def check_hit():
                 if e.rect.colliderect(f.rect):
                     p1.hits += 1
                     p1.score += 100
+                    
                     thump_snd.play()
                     create_explosion(0, e.rect.x, e.rect.y)
                     
@@ -371,6 +418,7 @@ def check_hit():
                     if f in shots:
                         shots.remove(f)
                     if p in players:
+                        
                         players.remove(p)
                     
 
@@ -513,6 +561,7 @@ while True:
     command = read_serial()    
     if command:
         if command == 'Esc':
+            game_client.send_high_score(p1.score)
             pygame.quit()
             sys.exit()
         # Disparar
