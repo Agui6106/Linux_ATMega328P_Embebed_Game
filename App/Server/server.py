@@ -88,8 +88,8 @@ def upload_file(file:UploadFile = File(...)):
         with open(f'./uploads/{file.filename}',"wb+") as f:
             shutil.copyfileobj(file.file, f)
         return "Nice:) Thanks"
-    except:
-        return "Upload file"
+    except Exception as e:
+        return f"Upload file {e}"
 
 def signal_handler():
     print('Deteniendo el servidor...')

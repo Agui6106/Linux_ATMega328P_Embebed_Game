@@ -173,10 +173,11 @@ class App(Frame):
                 messagebox.showerror('Error', f'Failed to start game: {str(e)}')
 
         elif selected_value == "Aseivo":
+            messagebox.showwarning("Warning", "Aseivo only compatible with keyboard")
             subprocess.run(["python3", "./aseivo.py"])
             
         elif selected_value == "PyDOOM":
-            messagebox.showwarning("Warning", "PyDoom only compatible with keyboard")
+            messagebox.showwarning("Warning", "PyDoom unestable version")
             subprocess.run(["python3", "./DOOM-style-Game/main.py"])
         
         elif selected_value == "Control Test":
@@ -346,7 +347,7 @@ class FrameTwo(Frame):
         self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
         self.connet_button: Button = self._create_connect_button()
         self.server_launch_button: Button = self._create_server_but()
-        #self.server_stop_button: Button = self._create_server_stop_but()  # Botón para detener el servidor
+        self.server_stop_button: Button = self._create_server_stop_but()  # Botón para detener el servidor
         
         self.init_gui()
     
@@ -360,7 +361,7 @@ class FrameTwo(Frame):
         self.refresh_serial_devices_button.grid(row = 3, column = 0,)
         self.connet_button.grid(row = 3, column = 1)
         self.server_launch_button.grid(row=4,column=0, columnspan=2)
-        #self.server_stop_button.grid(row=4,column=1)
+        self.server_stop_button.grid(row=4,column=1)
         
         # Others Settings
         self.baudrate_combobox.current(0) # No esta seleccionado
@@ -525,6 +526,7 @@ class FrameFour(Frame):
         self.main_txt.insert('14.0',' - Aseivo for the help coding\n')
         self.main_txt.insert('15.0',' - Rick for being my reason to continue studying\n')
         self.main_txt.insert('16.0',' - Carracedo for the trust on me\n')
+        self.main_txt.insert('17.0',' - And Pololu for not let us down\n')
         
         self.main_txt.config(state='disabled')
 
