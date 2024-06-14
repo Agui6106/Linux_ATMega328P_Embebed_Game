@@ -1,5 +1,7 @@
 import os
 import shutil
+import signal
+import sys
 
 from fastapi import FastAPI
 from fastapi import File
@@ -34,7 +36,7 @@ async def main():
             }
         </style>
         <div class="nes-container is-rounded">
-            <img src="WhatsApp Image 2024-06-13 at 7.42.21 PM.jpeg" alt="fondo" style="width: 100%;">
+            <img src="./GameNestWeb.jpeg" alt="fondo" style="width: 100%;">
         </div>
 
         <section class="nes-container">
@@ -59,7 +61,7 @@ async def main():
     """
     return content
 
-@app.get('/') # Decorators: Es una función que crea otra funciones
+@app.get('/hello') # Decorators: Es una función que crea otra funciones
 def hello():
     return "Hello"
 
@@ -82,6 +84,11 @@ def upload_file(file:UploadFile = File(...)):
     except:
         return "Upload file"
 
+def signal_handler():
+    print('Deteniendo el servidor...')
+    sys.exit(0)
+
 if __name__ == '__main__':
     import uvicorn
+    signal.signal(signal.SIGTERM, signal_handler)
     uvicorn.run(app = app, host = "0.0.0.0", port = 8081)

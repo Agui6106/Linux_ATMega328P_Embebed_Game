@@ -7,14 +7,12 @@ from tkinter import Tk
 from tkinter import Canvas
 from tkinter import PhotoImage
 from tkinter import Text
-from tkinter import Event  # Añadir importación de Event
-
 
 import subprocess
 import socket
 import threading
-
-from pygame.locals import QUIT
+import os
+import signal
 
 from tkinter.ttk import Combobox
 
@@ -245,7 +243,6 @@ class App(Frame):
         
         if user_response:
             print("User chose to upload scores")
-            #subprocess.run(["python3", "./Server/socket.py"])
             # We are ready to start sockest :D
             
         else:
@@ -314,7 +311,6 @@ class FrameOne(Frame):
         self.scores_txt.grid(row=1, column=0,columnspan=2,rowspan=3, padx=5)
         
     # -- Funciones -- # 
-    
     # - Titulo - #
     def _create_Scores_label(self) -> Label:
         return Label(
@@ -338,24 +334,31 @@ class FrameTwo(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
         self.parent: Tk = parent
         
+        self.server_process: subprocess.Popen | None = None  # Almacena el proceso del servidor
         self.serial_device: SerialSensor | None = None
         
         #  Creacion de elementos graficos
-        self.serial_devices_combobox: Combobox = self._init_serial_devices_combobox()
-        self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
-        self.baudrate_combobox: Combobox = self._create_baudrate_combobox()
-        self.connet_button: Button = self._create_connect_button()
         self.title_label: Label = self._create_Settings_label()
+        self.serial_devices_combobox: Combobox = self._init_serial_devices_combobox()
+        self.baudrate_combobox: Combobox = self._create_baudrate_combobox()
+        self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
+        self.connet_button: Button = self._create_connect_button()
+        self.server_launch_button: Button = self._create_server_but()
+        self.server_stop_button: Button = self._create_server_stop_but()  # Botón para detener el servidor
         
         self.init_gui()
     
     def init_gui(self,) -> None:
         # - Colocacion de elementos graficos
         self.title_label.grid(row=0, column=0, columnspan=2, sticky ='n',padx=40)
+        
         self.serial_devices_combobox.grid(row=1, column=0, columnspan= 2,  padx=40)
         self.baudrate_combobox.grid(row = 2, column = 0, columnspan= 2, padx=40, pady= 10)
-        self.refresh_serial_devices_button.grid(row = 3, column = 0,padx=20)
+        
+        self.refresh_serial_devices_button.grid(row = 3, column = 0,)
         self.connet_button.grid(row = 3, column = 1)
+        self.server_launch_button.grid(row=4,column=0)
+        self.server_stop_button.grid(row=4,column=1)
         
         # Others Settings
         self.baudrate_combobox.current(0) # No esta seleccionado
@@ -447,6 +450,49 @@ class FrameTwo(Frame):
             cursor='spider',
             font=("Helvetica",12,"bold")
         ) 
+    
+    # - Server Init - #
+    def _create_server_but(self) -> Button:
+        return Button(
+            master = self,
+            text = 'Server Init',
+            command = self.server_init,
+            width=20,
+            cursor='spider',
+            font=("Helvetica",12,"bold")
+        )
+    
+    # - Server Stop - #
+    def _create_server_stop_but(self) -> Button:
+        return Button(
+            master=self,
+            text='Stop Server',
+            command=self.server_stop,
+            width=20,
+            cursor='spider',
+            font=("Helvetica", 12, "bold")
+        )
+    
+    # - Operativo. Corremos el server - #
+    def server_init(self):
+        self.server_thread = threading.Thread(target=self.run_server)
+        self.server_thread.start()
+
+    def run_server(self):
+        subprocess.run(["python3", "./Server/server.py"])
+        self.server_process.communicate()  # Espera a que el proceso termine
+    
+    # - Operativo. Cerramos el server - #
+    def server_stop(self):
+        if self.server_process and self.server_process.poll() is None:  # Comprueba si el proceso sigue en ejecución
+            os.kill(self.server_process.pid, signal.SIGTERM)  # Envía la señal SIGTERM
+            self.server_process.wait()  # Espera a que el proceso termine
+            messagebox.showinfo('Server Stopped', 'The server has been stopped successfully.')
+        else:
+            messagebox.showinfo('Server Not Running', 'The server is not running.')
+        
+        
+    
       
 # Credits Frame   
 class FrameFour(Frame):
