@@ -10,6 +10,8 @@ import serial
 
 import socket
 import threading
+import time
+
 
 class GameClient:
     def __init__(self, host='0.0.0.0', port=3333):
@@ -22,7 +24,7 @@ class GameClient:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
         self.running = True
-        print(f"Connected to server at {self.host}:{self.port}")
+        print(f"Connected client to server at {self.host}:{self.port}")
 
         # Start a thread to receive messages from the server
         receive_thread = threading.Thread(target=self.receive_messages)
@@ -69,11 +71,6 @@ PORT = 3333  # Puerto en el que el servidor está escuchando
 game_client = GameClient(HOST, PORT)
 game_client.connect()
 
-
-# Configuración del cliente
-HOST = '0.0.0.0'  # Dirección IP del servidor
-PORT = 3333         # Puerto en el que el servidor está escuchando
-
 # - SERIAL INITIALIZE - #
 # Verifcamos herecnia de componentes
 if len(sys.argv) != 3:
@@ -89,6 +86,17 @@ ser = serial.Serial(
     baudrate=baudrate,
     timeout=1
 )
+
+# - Prueba serial - #
+ser.write('1'.encode())
+time.sleep(1) # espera en segundos
+ser.write('2'.encode())
+time.sleep(1) # espera en segundos
+ser.write('3'.encode())
+time.sleep(1) # espera en segundos
+ser.write('4'.encode())
+time.sleep(1) # espera en segundos
+
 
 # INITIALIZE PYGAME
 pygame.init()
