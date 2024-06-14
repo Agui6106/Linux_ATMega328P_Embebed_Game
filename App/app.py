@@ -13,6 +13,7 @@ import socket
 import threading
 import os
 import signal
+import webbrowser
 
 from tkinter.ttk import Combobox
 
@@ -243,7 +244,8 @@ class App(Frame):
         
         if user_response:
             print("User chose to upload scores")
-            # We are ready to start sockest :D
+            nav1 = webbrowser.get("firefox")
+            nav1.open("http://0.0.0.0:8081")
             
         else:
             print("User chose not to upload scores")
@@ -491,9 +493,6 @@ class FrameTwo(Frame):
         else:
             messagebox.showinfo('Server Not Running', 'The server is not running.')
         
-        
-    
-      
 # Credits Frame   
 class FrameFour(Frame):
     def __init__(self, parent, *args, **kwargs):
