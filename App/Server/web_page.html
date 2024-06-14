@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Upload a file</title>
+        <!-- minify -->
+        <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+        <!-- latest -->
+        <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+        <!-- core style only -->
+        <link href="https://unpkg.com/nes.css/css/nes-core.min.css" rel="stylesheet" />
+
+        <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+        <link href="https://unpkg.com/nes.css/css/nes.css" rel="stylesheet" />
+    </style>
+    </head>
+    <body>
+        <style>
+            body {
+                background-color: #4A71BC;
+            }
+        </style>
+
+        <div class="nes-container with-title is-centered", style="color: white">
+            <h4 >GameNest.Inc team</h4>
+            <h2>Welcome to GAMENEST Uploader Scores</h2>
+        </div>
+
+        <section class="nes-container">
+            <section class="message-list">
+              <section class="message -left">
+                <!-- Balloon -->
+                <div class="nes-balloon from-left">
+                    <p>Upload your scores</p>
+                </div>
+                <i class="snes-logo"></i>
+               </section>
+            </section>
+            <form action="/uploadfile/" method="post" enctype="multipart/form-data">
+                <label class="nes-btn">
+                    <span>Select your file</span>
+                    <input type="file">
+                </label>
+                
+                <input type="submit" class="is-primary" value="Submit">
+            </form>
+            
+            <i class="nes-kirby"></i>
+        </section>
+    </body>
+</html>
