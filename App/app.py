@@ -58,8 +58,8 @@ class GameServer:
     # Comunicacion con el cliente
     def handle_client(self, client_socket, client_address):
         self.clients.append(client_socket)
-        try:
-            while True:
+        while True:
+            try:
                 message = client_socket.recv(1024)
                 if not message:
                     break
@@ -69,12 +69,12 @@ class GameServer:
                 print(f" HS: {Global_Scores}")
                 self.broadcast_message(self.high_score, client_socket)
                         
-        except Exception as e:
-            print(f"Error with client {client_address}: {e}")
-        finally:
-            print(f"Closing connection with {client_address}")
-            self.clients.remove(client_socket)
-            client_socket.close()
+            except Exception as e:
+                print(f"Error with client {client_address}: {e}")
+            finally:
+                print(f"Closing connection with {client_address}")
+                self.clients.remove(client_socket)
+                client_socket.close()
 
 
     def broadcast_message(self, message, sender_socket):
@@ -245,7 +245,7 @@ class App(Frame):
         if user_response:
             print("User chose to upload scores")
             nav1 = webbrowser.get("firefox")
-            nav1.open("http://0.0.0.0:8081")
+            nav1.open("http://192.168.137.29:8081")
             
         else:
             print("User chose not to upload scores")
@@ -346,7 +346,7 @@ class FrameTwo(Frame):
         self.refresh_serial_devices_button: Button = self._create_refresh_serial_devices_button()
         self.connet_button: Button = self._create_connect_button()
         self.server_launch_button: Button = self._create_server_but()
-        self.server_stop_button: Button = self._create_server_stop_but()  # Botón para detener el servidor
+        #self.server_stop_button: Button = self._create_server_stop_but()  # Botón para detener el servidor
         
         self.init_gui()
     
@@ -359,8 +359,8 @@ class FrameTwo(Frame):
         
         self.refresh_serial_devices_button.grid(row = 3, column = 0,)
         self.connet_button.grid(row = 3, column = 1)
-        self.server_launch_button.grid(row=4,column=0)
-        self.server_stop_button.grid(row=4,column=1)
+        self.server_launch_button.grid(row=4,column=0, columnspan=2)
+        #self.server_stop_button.grid(row=4,column=1)
         
         # Others Settings
         self.baudrate_combobox.current(0) # No esta seleccionado
@@ -506,18 +506,17 @@ class FrameFour(Frame):
         
         # - Agregamos los credits - #
         # Juegos
-        self.main_txt.insert('1.0',' \n')
-        self.main_txt.insert('2.0','Games provided by:\n')
-        self.main_txt.insert('3.0',' - 1945 by Haroon Khalid\n')
-        self.main_txt.insert('4.0',' - Aseivo by Axel Camacho Villafuerte\n')
-        self.main_txt.insert('5.0',' - PyDoom by StanislavPetrovV\n')
+        self.main_txt.insert('1.0','Games provided by:\n')
+        self.main_txt.insert('2.0',' - 1945 by Haroon Khalid\n')
+        self.main_txt.insert('3.0',' - Aseivo by Axel Camacho Villafuerte\n')
+        self.main_txt.insert('4.0',' - PyDoom by StanislavPetrovV\n')
         
         # Nostros 
-        self.main_txt.insert('6.0',' \n')
-        self.main_txt.insert('7.0','Crafted with passion and love by NestSystems Inc. Team:\n')
-        self.main_txt.insert('8.0',' - Guadalupe Paulina López Cuevas - A01701095\n')
-        self.main_txt.insert('9.0',' - Jorge Israel Sandoval Sánchez - A017010373\n')
-        self.main_txt.insert('10.0',' - Jose Alberto Aguilar Sanchez - A01735612\n')
+        self.main_txt.insert('5.0',' \n')
+        self.main_txt.insert('6.0','Crafted with passion and love by NestSystems Inc. Team:\n')
+        self.main_txt.insert('7.0',' - Guadalupe Paulina López Cuevas - A01701095\n')
+        self.main_txt.insert('8.0',' - Jorge Israel Sandoval Sánchez - A017010373\n')
+        self.main_txt.insert('9.0',' - Jose Alberto Aguilar Sanchez - A01735612\n')
         
         # Agradecimientos
         self.main_txt.insert('11.0',' \n')

@@ -95,7 +95,8 @@ ser.write('3'.encode())
 time.sleep(1) # espera en segundos
 ser.write('4'.encode())
 time.sleep(1) # espera en segundos
-
+ser.write('P'.encode())
+time.sleep(1) # espera en segundos
 
 # INITIALIZE PYGAME
 pygame.init()
@@ -569,6 +570,9 @@ while True:
     if command:
         if command == 'Esc':
             game_client.send_high_score(p1.score)
+            time.sleep(1)
+            ser.write('O'.encode())
+            time.sleep(1)
             pygame.quit()
             sys.exit()
         # Disparar
