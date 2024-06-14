@@ -12,7 +12,6 @@ import socket
 import threading
 import time
 
-
 class GameClient:
     def __init__(self, host='0.0.0.0', port=3333):
         self.host = host

@@ -13,6 +13,7 @@ BAUDRATES = [   #Velocidad a la que se envian o reciben los caracteres
     9600, 
     19200, 
     38400, 
+    56000,
     57600, 
     115200
 ]
