@@ -86,18 +86,6 @@ ser = serial.Serial(
     timeout=1
 )
 
-# - Prueba serial - #
-ser.write('1'.encode())
-time.sleep(1) # espera en segundos
-ser.write('2'.encode())
-time.sleep(1) # espera en segundos
-ser.write('3'.encode())
-time.sleep(1) # espera en segundos
-ser.write('4'.encode())
-time.sleep(1) # espera en segundos
-ser.write('P'.encode())
-time.sleep(1) # espera en segundos
-
 # INITIALIZE PYGAME
 pygame.init()
 
@@ -426,7 +414,6 @@ def check_hit():
                     if f in shots:
                         shots.remove(f)
                     if p in players:
-                        
                         players.remove(p)
                     
 
@@ -446,7 +433,8 @@ def create_player():
 def spawn_enemies():
     if len(enemies) < 8:
         create_enemy()
-        
+   
+ 
 def check_plane_hit():
     for e in enemies:
         for p in players:
@@ -457,10 +445,9 @@ def check_plane_hit():
             
                 if e in enemies:
                     enemies.remove(e)
-                    ser.write('1'.encode())
+
                 if p in players:
                     players.remove(p)
-                    ser.write('2'.encode())
                     
 # SET UP THE FONT AND COLOR
 default_font = pygame.font.get_default_font()
@@ -542,6 +529,8 @@ players.append(p1)
 menu_screen = Menu()
 menu_screen.exit = 0
 
+# Global Lives
+count = 0  
 
 # MAIN MENU LOOP
 menu_screen_exit = False
@@ -558,15 +547,15 @@ while not menu_screen_exit:
         break
         
     menu_screen.update()
-
+  
 # MAIN GAME LOOP
 while True:
-    
+    command = read_serial()
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-            sys.exit()
-        
-    command = read_serial()    
+            sys.exit()"""
+    
     if command:
         if command == 'Esc':
             game_client.send_high_score(p1.score)
@@ -587,10 +576,13 @@ while True:
         elif command == 'Jmp':
             p1.bombs -= 1
         
-        elif command == 'Str':
-            if len(players) == 0:
-                create_player()
-                                    
+        if command == 'Str':
+            ser.write('M'.encode())
+            count +=1
+            ser.write(str(count).encode())
+            if len(players) == 0 and count < 4:
+                create_player()   
+            
     if play_musc == 1:
         pygame.mixer.music.play()
     play_musc = 0
