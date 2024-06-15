@@ -36,7 +36,6 @@ async def main():
                 background-color: #4A71BC;
             }
         </style>
-
         <div class="nes-container with-title is-centered", style="color: white">
             <h4 >GameNest.Inc team</h4>
             <h2>Welcome to GAMENEST Uploader Scores</h2>
@@ -47,17 +46,13 @@ async def main():
               <section class="message -left">
                 <!-- Balloon -->
                 <div class="nes-balloon from-left">
-                    <p>Upload your scores</p>
+                    <p>Upload a file</p>
                 </div>
                 <i class="snes-logo"></i>
                </section>
             </section>
             <form action="/uploadfile/" method="post" enctype="multipart/form-data">
-                <label class="nes-btn">
-                    <span>Select your file</span>
-                    <input type="file">
-                </label>
-                
+                <input type="file" class="is-primary" name="file">
                 <input type="submit" class="is-primary" value="Submit">
             </form>
             

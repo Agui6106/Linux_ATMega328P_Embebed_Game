@@ -360,8 +360,8 @@ class FrameTwo(Frame):
         
         self.refresh_serial_devices_button.grid(row = 3, column = 0,)
         self.connet_button.grid(row = 3, column = 1)
-        self.server_launch_button.grid(row=4,column=0, columnspan=2)
-        self.server_stop_button.grid(row=4,column=1)
+        #self.server_launch_button.grid(row=4,column=0, columnspan=2)
+        #self.server_stop_button.grid(row=4,column=1)
         
         # Others Settings
         self.baudrate_combobox.current(0) # No esta seleccionado
