@@ -85,6 +85,13 @@ show_jump_text = False  # Variable de estado para controlar la visibilidad del t
 # Shoot
 shoot_text_surface = font.render("Shoot Button", True, WHITE)
 show_shoot_text = False  # Variable de estado para controlar la visibilidad del texto
+# Vibration
+vibM_text_surface = font.render("Vibration Motor", True, WHITE)
+show_vibM_text = False  # Variable de estado para controlar la visibilidad del texto
+# Vibration
+anim_text_surface = font.render("Animation Change", True, WHITE)
+show_anim_text = False  # Variable de estado para controlar la visibilidad del texto
+
 
 # Bucle principal del juego
 running = True
@@ -141,6 +148,11 @@ while running:
         screen.blit(jump_text_surface, (20, 300)) 
     if show_shoot_text:
         screen.blit(shoot_text_surface, (20, 400))
+    if show_vibM_text:
+        screen.blit(vibM_text_surface, (500, 100))
+    if show_anim_text:
+        screen.blit(anim_text_surface, (500, 200))
+    
     # Actualizar la pantalla
     pygame.display.flip()
 
@@ -161,22 +173,43 @@ while running:
             show_escape_text = False
             show_jump_text = False
             show_shoot_text = False
+            show_vibM_text = False
+            show_anim_text = False
         elif command == 'Esc':
             show_start_text = False
             show_escape_text = True
             show_jump_text = False
             show_shoot_text = False
+            show_vibM_text = False
+            show_anim_text = False
         elif command == 'Jmp':
             show_start_text = False
             show_escape_text = False
             show_jump_text = True
             show_shoot_text = False
+            show_vibM_text = False
+            show_anim_text = False
         elif command == 'Sho':
             show_start_text = False
             show_escape_text = False
             show_jump_text = False
             show_shoot_text = True
-            
+            show_vibM_text = False
+            show_anim_text = False
+        elif command == 'M':
+            show_start_text = False
+            show_escape_text = False
+            show_jump_text = False
+            show_shoot_text = False
+            show_vibM_text = True
+            show_anim_text = False
+        elif command == 'O':
+            show_start_text = False
+            show_escape_text = False
+            show_jump_text = False
+            show_shoot_text = False
+            show_vibM_text = False
+            show_anim_text = True
     """
         Received command list:
         - Movement
@@ -191,10 +224,8 @@ while running:
             Jump On = Jmp
             Shoot On = Sho
             
-            Start Off = st0
-            Escape Off = es0
-            Jump Off = jm0
-            Shoot Off = sh0
+            Vibration = M
+            Image change = O
         
         Sent command list:
         die -> Should do sth in control

@@ -579,7 +579,7 @@ while True:
         if command == 'Str':
             ser.write('M'.encode())
             count +=1
-            ser.write(str(count).encode())
+            #ser.write(str(count).encode())
             if len(players) == 0 and count < 4:
                 create_player()   
             
