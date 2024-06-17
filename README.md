@@ -1,7 +1,8 @@
 # Linux_ATMega328P_Embedded_Game
 Proyecto embebido con conexión serial Raspberry Pi - Microcontrolador ATMega328P Software (Diseño de Sistemas en Chip TE2003B)
 
-Github complementario con la parte del Hardware: https://github.com/PaulinaLopezC/Control_ATmega328P
+Github complementario con la parte del Hardware: https://github.com/PaulinaLopezC/Control_ATmega328P_Embedded_Game
+
 
 Se desarrollo un sistema embebido con la palca de desarrollo Raspberry Pi 4 y el microcontrolador ATMega328P para implementar una consola de videojuegos con comandos con nuestro control reflejado en nuestro videojuego. 
 
